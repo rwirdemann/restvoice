@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"time"
 	"fmt"
+	"time"
 )
 
 type Activity struct {
@@ -12,6 +12,6 @@ type Activity struct {
 	Updated time.Time `json:"-"`
 }
 
-func (activity Activity) String() string {
-	return fmt.Sprintf("Id: %d Name: %s", activity.Id, activity.Name)
+func (a Activity) String() string {
+	return fmt.Sprintf("Id: %d Name: %s", a.Id, a.Name)
 }

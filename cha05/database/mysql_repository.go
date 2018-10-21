@@ -32,6 +32,7 @@ func NewMySQLRepository() *MySQLRepository {
 	r.bookings = make(map[int]map[int]domain.Booking)
 	r.projects = make(map[int]domain.Project)
 	r.customers = make(map[int]domain.Customer)
+	r.rates = make(map[int]map[int]domain.Rate)
 	r.activities = make(map[string]map[int]domain.Activity)
 	return &r
 }
@@ -63,8 +64,12 @@ func (r *MySQLRepository) GetCustomer(id int) domain.Customer {
 }
 
 func (r *MySQLRepository) CreateInvoice(invoice domain.Invoice) (domain.Invoice, error) {
-	invoice.Id = r.getNextId()
-	invoice.Status = "open"
+	if invoice.Id == 0 {
+		invoice.Id = r.getNextId()
+	}
+	if invoice.Status == "" {
+		invoice.Status = "open"
+	}
 	r.invoices[invoice.Id] = invoice
 	return invoice, nil
 }
@@ -98,8 +103,8 @@ func (r *MySQLRepository) CreateActivity(activity domain.Activity) {
 	}
 }
 
-func (r *MySQLRepository) ActivityById(user string, id int) domain.Activity {
-	return r.activities[user][id]
+func (r *MySQLRepository) ActivityById(id int) domain.Activity {
+	return r.activities[""][id]
 }
 
 func (r *MySQLRepository) RateByProjectIdAndActivityId(projectId int, activityId int) domain.Rate {
@@ -109,4 +114,28 @@ func (r *MySQLRepository) RateByProjectIdAndActivityId(projectId int, activityId
 func (r *MySQLRepository) getNextId() int {
 	r.nextId = r.nextId + 1
 	return r.nextId
+}
+
+func (r *MySQLRepository) CreateRate(rate domain.Rate) {
+	if projectRates, ok := r.rates[rate.ProjectId]; ok {
+		projectRates[rate.ActivityId] = rate
+	} else {
+		r.rates[rate.ProjectId] = make(map[int]domain.Rate)
+		r.rates[rate.ProjectId][rate.ActivityId] = rate
+	}
+}
+
+func (r *MySQLRepository) CreateProject(p domain.Project) {
+	p.Id = r.nextProjectId()
+	r.projects[p.Id] = p
+}
+
+func (r *MySQLRepository) nextProjectId() int {
+	nextId := 1
+	for _, i := range r.projects {
+		if i.Id >= nextId {
+			nextId = i.Id + 1
+		}
+	}
+	return nextId
 }

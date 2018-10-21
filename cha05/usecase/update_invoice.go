@@ -5,9 +5,10 @@ import (
 )
 
 type UpdateInvoiceRepositoryPort interface {
+	GetInvoice(id int, join ...string) domain.Invoice
 	UpdateInvoice(invoice domain.Invoice) error
 	RateByProjectIdAndActivityId(projectId int, activityId int) domain.Rate
-	ActivityById(user string, id int) domain.Activity
+	ActivityById(id int) domain.Activity
 	GetBookingsByInvoiceId(invoiceId int) []domain.Booking
 }
 
@@ -20,13 +21,15 @@ func NewUpdateInvoice(repository UpdateInvoiceRepositoryPort) UpdateInvoice {
 }
 
 func (u UpdateInvoice) Run(invoice domain.Invoice) error {
-	if invoice.Status == "payment expected" {
+	if invoice.Status == "ready for aggregation" {
 		bookings := u.repository.GetBookingsByInvoiceId(invoice.Id)
 		for _, b := range bookings {
-			activity := u.repository.ActivityById("ralf", b.ActivityId)
+			activity := u.repository.ActivityById(b.ActivityId)
 			rate := u.repository.RateByProjectIdAndActivityId(b.ProjectId, b.ActivityId)
 			invoice.AddPosition(b.ProjectId, activity.Name, b.Hours, rate.Price)
 		}
+		invoice.Status = "payment expected"
 	}
+
 	return u.repository.UpdateInvoice(invoice)
 }

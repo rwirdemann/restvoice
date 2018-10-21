@@ -17,5 +17,8 @@ func main() {
 	restAdapter.MakeCreateBookingHandler(createBooking)
 	restAdapter.MakeGetInvoiceHandler(getInvoice)
 
+	restAdapter.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}",
+		restAdapter.MakeUpdateInvoiceHandler(repository)).Methods("PUT")
+
 	restAdapter.ListenAndServe()
 }
