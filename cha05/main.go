@@ -19,8 +19,11 @@ func main() {
 		r.MakeUpdateInvoiceHandler(updateInvoice)).Methods("PUT")
 
 	createBooking := usecase.NewCreateBooking(repository)
+	createBookingHandler := r.MakeCreateBookingHandler(createBooking)
+	r.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}/bookings",
+		createBookingHandler).Methods("POST")
+
 	getInvoice := usecase.NewGetInvoice(repository)
-	r.MakeCreateBookingHandler(createBooking)
 	r.MakeGetInvoiceHandler(getInvoice)
 
 	r.ListenAndServe()

@@ -82,8 +82,8 @@ func (a Adapter) MakeCreateInvoiceHandler(createInvoice usecase.CreateInvoice) h
 	}
 }
 
-func (a Adapter) MakeCreateBookingHandler(createBooking usecase.CreateBooking) {
-	handler := func(w http.ResponseWriter, r *http.Request) {
+func (a Adapter) MakeCreateBookingHandler(createBooking usecase.CreateBooking) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		booking, err := a.readBooking(r)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -100,7 +100,6 @@ func (a Adapter) MakeCreateBookingHandler(createBooking usecase.CreateBooking) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 	}
-	a.r.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}/bookings", handler).Methods("POST")
 }
 
 func (a Adapter) MakeUpdateInvoiceHandler(updateInvoice usecase.UpdateInvoice) http.HandlerFunc {

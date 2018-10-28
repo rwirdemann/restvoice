@@ -30,14 +30,22 @@ func init() {
 }
 
 func main() {
-	if user, ok := login("jo", "secret"); ok {
-		claims := CustomClaims{user.name, user.admin, jwt.StandardClaims{
-			Subject: "restvoice.org",
-		}}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		signed, err := token.SignedString(privateKey)
-		fmt.Printf("%v %v", signed, err)
+	fmt.Printf("%v", token("jo", "secret"))
+}
+
+func token(name string, password string) string {
+	var user User
+	var ok bool
+	if user, ok = login(name, password); !ok {
+		return ""
 	}
+
+	claims := CustomClaims{user.name, user.admin, jwt.StandardClaims{
+		Subject: "restvoice.org",
+	}}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signed, _ := token.SignedString(privateKey)
+	return signed
 }
 
 func login(user string, password string) (User, bool) {
