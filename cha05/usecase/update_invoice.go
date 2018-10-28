@@ -21,7 +21,7 @@ func NewUpdateInvoice(repository UpdateInvoiceRepositoryPort) UpdateInvoice {
 }
 
 func (u UpdateInvoice) Run(invoice domain.Invoice) error {
-	if invoice.Status == "ready for aggregation" {
+	if invoice.IsReadyForAggregation() {
 		bookings := u.repository.GetBookingsByInvoiceId(invoice.Id)
 		for _, b := range bookings {
 			activity := u.repository.ActivityById(b.ActivityId)

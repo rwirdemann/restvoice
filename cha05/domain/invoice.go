@@ -48,3 +48,7 @@ func (i *Invoice) ToPDF() []byte {
 	dat, _ := ioutil.ReadFile("/tmp/invoice.pdf")
 	return dat
 }
+
+func (i Invoice) IsReadyForAggregation() bool {
+	return i.Status == "ready for aggregation"
+}
