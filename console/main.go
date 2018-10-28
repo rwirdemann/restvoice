@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rwirdemann/restvoice/cha05/database"
+	"github.com/rwirdemann/restvoice/cha06/database"
 	"github.com/rwirdemann/restvoice/console/cli"
 
-	"github.com/rwirdemann/restvoice/cha05/usecase"
+	"github.com/rwirdemann/restvoice/cha06/usecase"
 )
 
 func main() {

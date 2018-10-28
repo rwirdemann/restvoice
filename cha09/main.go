@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/rwirdemann/restvoice/cha05/database"
-	"github.com/rwirdemann/restvoice/cha05/usecase"
+	"github.com/rwirdemann/restvoice/cha06/database"
+	"github.com/rwirdemann/restvoice/cha06/usecase"
 	"github.com/rwirdemann/restvoice/cha09/rest"
 	"github.com/rwirdemann/restvoice/cha09/roles"
 )

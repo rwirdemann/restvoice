@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/rwirdemann/restvoice/cha05/usecase"
+	"github.com/rwirdemann/restvoice/cha06/usecase"
 
 	"github.com/gorilla/mux"
-	"github.com/rwirdemann/restvoice/cha05/domain"
+	"github.com/rwirdemann/restvoice/cha06/domain"
 )
 
 type Adapter struct {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/rwirdemann/restvoice/cha05/mysql"
-	"github.com/rwirdemann/restvoice/cha05/rest"
-	"github.com/rwirdemann/restvoice/cha05/usecase"
+	"github.com/rwirdemann/restvoice/cha06/mysql"
+	"github.com/rwirdemann/restvoice/cha06/rest"
+	"github.com/rwirdemann/restvoice/cha06/usecase"
 )
 
 func main() {
