@@ -11,7 +11,7 @@ import (
 	"github.com/rwirdemann/restvoice/cha05/domain"
 	"github.com/rwirdemann/restvoice/cha05/rest"
 	"github.com/rwirdemann/restvoice/cha05/usecase"
-	"github.com/rwirdemann/restvoice/cha06/usecase/mocks"
+	"github.com/rwirdemann/restvoice/cha07/usecase/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
