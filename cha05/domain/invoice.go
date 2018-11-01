@@ -12,10 +12,10 @@ type Position struct {
 
 type Invoice struct {
 	Id         int                         `json:"id"`
+	Month      int                         `json:"month"`
+	Year       int                         `json:"year"`
 	Status     string                      `json:"status"`
 	CustomerId int                         `json:"customerId"`
-	Year       int                         `json:"year"`
-	Month      int                         `json:"month"`
 	Positions  map[int]map[string]Position `json:"positions,omitempty"`
 	Bookings   []Booking                   `json:"-"`
 	Updated    time.Time
@@ -51,4 +51,23 @@ func (i *Invoice) ToPDF() []byte {
 
 func (i Invoice) IsReadyForAggregation() bool {
 	return i.Status == "ready for aggregation"
+}
+
+type Operation string
+
+func (invoice Invoice) GetOperations() []Operation {
+	switch invoice.Status {
+	case "open":
+		return []Operation{"book", "charge", "bookings"}
+	case "payment expected":
+		return []Operation{"payment", "bookings"}
+	case "payed":
+		return []Operation{"archive"}
+	case "archived":
+		return []Operation{"revoke"}
+	case "revoked":
+		return []Operation{"archive"}
+	default:
+		return []Operation{}
+	}
 }

@@ -3,7 +3,7 @@ package cli
 import (
 	"flag"
 
-	"github.com/rwirdemann/restvoice/cha06/domain"
+	"github.com/rwirdemann/restvoice/cha05/domain"
 	"github.com/rwirdemann/restvoice/cha06/usecase"
 )
 

@@ -24,7 +24,8 @@ func main() {
 		adapter.MakeUpdateInvoiceHandler(updateInvoice)).Methods("PUT")
 
 	getInvoice := usecase.NewGetInvoice(repository)
-	adapter.MakeGetInvoiceHandler(getInvoice)
+	adapter.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}",
+		adapter.MakeGetInvoiceHandler(getInvoice)).Methods("GET")
 
 	adapter.ListenAndServe()
 }

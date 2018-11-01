@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/rwirdemann/restvoice/cha05/domain"
 	"github.com/rwirdemann/restvoice/cha06/database"
-	"github.com/rwirdemann/restvoice/cha06/domain"
 	"github.com/rwirdemann/restvoice/cha06/rest"
 	"github.com/rwirdemann/restvoice/cha06/usecase"
 	"github.com/rwirdemann/restvoice/cha07/usecase/mocks"

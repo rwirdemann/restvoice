@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/rwirdemann/restvoice/cha06/domain"
+	"github.com/rwirdemann/restvoice/cha05/domain"
 )
 
 type GetInvoicePort interface {
@@ -16,6 +16,6 @@ func NewGetInvoice(repository GetInvoicePort) GetInvoice {
 	return GetInvoice{repository: repository}
 }
 
-func (u GetInvoice) Run(id int) domain.Invoice {
-	return u.repository.GetInvoice(id)
+func (u GetInvoice) Run(id int, join string) domain.Invoice {
+	return u.repository.GetInvoice(id, join)
 }

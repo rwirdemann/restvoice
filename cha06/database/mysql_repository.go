@@ -5,7 +5,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/rwirdemann/restvoice/cha06/domain"
+	"github.com/rwirdemann/restvoice/cha05/domain"
 )
 
 type MySQLRepository struct {

@@ -1,18 +1,16 @@
 package rest
 
 import (
-	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/rwirdemann/restvoice/cha06/usecase"
 
 	"github.com/gorilla/mux"
-	"github.com/rwirdemann/restvoice/cha06/domain"
+	"github.com/rwirdemann/restvoice/cha05/domain"
 )
 
 type Adapter struct {
@@ -116,41 +114,27 @@ func (a Adapter) MakeUpdateInvoiceHandler(updateInvoice usecase.UpdateInvoice) h
 	return handler
 }
 
-func (a Adapter) MakeGetInvoiceHandler(getInvoice usecase.GetInvoice) {
-	handler := func(w http.ResponseWriter, r *http.Request) {
+func (a Adapter) MakeGetInvoiceHandler(getInvoice usecase.GetInvoice) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(r)["invoiceId"])
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		if presenter, ok := a.InvoicePresenter(r.Header.Get("Accept")); ok {
-			invoice := getInvoice.Run(id)
+		join := ""
+		q := r.URL.Query()
+		if v, ok := q["expand"]; ok {
+			join = v[0]
+		}
+
+		if presenter, ok := a.InvoicePresenter(w, r); ok {
+			invoice := getInvoice.Run(id, join)
 			presenter.Present(invoice)
 		} else {
 			w.WriteHeader(http.StatusNotAcceptable)
 		}
 	}
-	a.r.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}", handler).Methods("GET")
-}
-
-type InvoicePresenter interface {
-	Present(i domain.Invoice)
-}
-
-type PDFInvoicePresenter struct {
-	w http.ResponseWriter
-	r *http.Request
-}
-
-func NewPDFInvoicePresenter(w http.ResponseWriter, r *http.Request) PDFInvoicePresenter {
-	return PDFInvoicePresenter{w: w, r: r}
-}
-
-func (p PDFInvoicePresenter) Present(i domain.Invoice) {
-	modTime := time.Now()
-	content := bytes.NewReader(i.ToPDF())
-	http.ServeContent(p.w, p.r, "invoice.pdf", modTime, content)
 }
 
 func (a Adapter) readBooking(r *http.Request) (domain.Booking, error) {
@@ -179,6 +163,13 @@ func (a Adapter) writeBooking(booking domain.Booking, w http.ResponseWriter) err
 	return nil
 }
 
-func (a Adapter) InvoicePresenter(accept string) (InvoicePresenter, bool) {
-	return PDFInvoicePresenter{}, true
+func (a Adapter) InvoicePresenter(w http.ResponseWriter, r *http.Request) (InvoicePresenter, bool) {
+	switch r.Header.Get("Accept") {
+	case "application/json", "application/hal+json":
+		return NewJSONInvoicePresenter(w), true
+	case "application/pdf":
+		return NewPDFInvoicePresenter(w, r), true
+	default:
+		return NewDefaultPresenter(), false
+	}
 }
