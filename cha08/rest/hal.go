@@ -18,6 +18,7 @@ type Embedded struct {
 	Bookings []domain.Booking `json:"bookings,omitempty"`
 }
 
+// HALInvoice dekoriert eine Invoice mit HAL-konformen _link-Elementen.
 type HALInvoice struct {
 	domain.Invoice
 	Links    map[domain.Operation]Link `json:"_links"`
@@ -43,12 +44,14 @@ func translate(operation domain.Operation, invoice domain.Invoice) (Link, error)
 		return Link{fmt.Sprintf("/book/%d", invoice.Id)}, nil
 	case "charge":
 		return Link{fmt.Sprintf("/charge/%d", invoice.Id)}, nil
+	case "cancel":
+		return Link{fmt.Sprintf("/invoice/%d", invoice.Id)}, nil
 	case "payment":
 		return Link{fmt.Sprintf("/payment/%d", invoice.Id)}, nil
 	case "archive":
 		return Link{fmt.Sprintf("/payment/%d", invoice.Id)}, nil
 	default:
-		return Link{}, errors.New(fmt.Sprintf("No translation found for operartion %s", operation))
+		return Link{}, errors.New(fmt.Sprintf("No translation found for operation %s", operation))
 	}
 }
 

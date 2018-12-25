@@ -34,6 +34,37 @@ func init() {
 	}
 }
 
+func AssertAdmin(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := extractJwtFromHeader(r.Header)
+		if isAdmin(token) {
+			next.ServeHTTP(w, r)
+			return
+		}
+		w.Header().Set("WWW-Authenticate", "Bearer realm=\"restvoice.org\"")
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+}
+
+func isAdmin(token string) bool {
+	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return publicKey, nil
+	})
+
+	if err == nil {
+		if claims, ok := t.Claims.(jwt.MapClaims); ok {
+			if claims["admin"] != nil {
+				return claims["admin"].(bool)
+			}
+		}
+	}
+
+	return false
+}
+
 func AssertOwnsInvoice(next http.HandlerFunc, repository RoleRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := extractJwtFromHeader(r.Header)

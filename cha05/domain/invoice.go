@@ -58,7 +58,7 @@ type Operation string
 func (invoice Invoice) GetOperations() []Operation {
 	switch invoice.Status {
 	case "open":
-		return []Operation{"book", "charge", "bookings"}
+		return []Operation{"book", "charge", "cancel", "bookings"}
 	case "payment expected":
 		return []Operation{"payment", "bookings"}
 	case "payed":

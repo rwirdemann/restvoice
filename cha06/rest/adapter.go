@@ -17,8 +17,8 @@ type Adapter struct {
 	r *mux.Router
 }
 
-func NewAdapter() *Adapter {
-	return &Adapter{mux.NewRouter()}
+func NewAdapter() Adapter {
+	return Adapter{mux.NewRouter()}
 }
 
 func (a Adapter) ListenAndServe() {
@@ -170,6 +170,6 @@ func (a Adapter) InvoicePresenter(w http.ResponseWriter, r *http.Request) (Invoi
 	case "application/pdf":
 		return NewPDFInvoicePresenter(w, r), true
 	default:
-		return NewDefaultPresenter(), false
+		return NewJSONInvoicePresenter(w), true
 	}
 }

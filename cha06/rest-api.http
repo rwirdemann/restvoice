@@ -1,0 +1,9 @@
+POST http://localhost:8080/customers/1/invoices
+
+{"Month": 12, "Year": 2018}
+
+###
+
+GET http://localhost:8080/customers/1/invoices/2
+
+###

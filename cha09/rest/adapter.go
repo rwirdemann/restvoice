@@ -125,7 +125,7 @@ func (a Adapter) MakeGetInvoiceHandler(getInvoice usecase.GetInvoice) {
 		}
 
 		if presenter, ok := a.InvoicePresenter(r.Header.Get("Accept")); ok {
-			invoice := getInvoice.Run(id)
+			invoice := getInvoice.Run(id, "")
 			presenter.Present(invoice)
 		} else {
 			w.WriteHeader(http.StatusNotAcceptable)

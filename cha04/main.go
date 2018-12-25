@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -12,14 +11,16 @@ import (
 )
 
 type Contact struct {
+	Firstname string
+	Lastname  string
 }
 
-var contacts = make(map[int]string)
 var contactMap = make(map[int]Contact)
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/contacts/{id:[0-9]+}", getContact).Methods("GET")
+	r.HandleFunc("/contacts", getContactsHandler).Methods("GET")
+	r.HandleFunc("/contacts/{id:[0-9]+}", getContactHandler).Methods("GET")
 	r.HandleFunc("/contacts", addContactHandler).Methods("POST")
 	r.HandleFunc("/contacts/{id[0-9]+}", updateContactHandler).Methods("PUT")
 	r.HandleFunc("/contacts/{id[0-9]+}", deleteContactHandler).Methods("DELETE")
@@ -33,7 +34,24 @@ func getContactsHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 	b, err := json.Marshal(s)
 	if err != nil {
-		log.Println(err)
+		writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Write(b)
+}
+
+func getContactHandler(writer http.ResponseWriter, request *http.Request) {
+	v := mux.Vars(request)
+	id, _ := strconv.Atoi(v["id"])
+	if _, ok := contactMap[id]; !ok {
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	b, err := json.Marshal(contactMap[id])
+	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -43,13 +61,15 @@ func getContactsHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func addContactHandler(writer http.ResponseWriter, request *http.Request) {
-	if contact, err := ioutil.ReadAll(request.Body); err == nil {
-		if len(contact) == 0 {
+	if b, err := ioutil.ReadAll(request.Body); err == nil {
+		if len(b) == 0 {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		id := nextId()
-		contacts[id] = string(contact)
+		var contact Contact
+		json.Unmarshal(b, &contact)
+		contactMap[id] = contact
 		url := request.URL.String()
 		writer.Header().Set("Location", fmt.Sprintf("%s/%d", url, id))
 		writer.WriteHeader(http.StatusCreated)
@@ -59,41 +79,37 @@ func addContactHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func updateContactHandler(writer http.ResponseWriter, request *http.Request) {
-	if contact, err := ioutil.ReadAll(request.Body); err == nil {
-		if len(contact) == 0 {
+	if b, err := ioutil.ReadAll(request.Body); err == nil {
+		if len(b) == 0 {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		v := mux.Vars(request)
 		id, _ := strconv.Atoi(v["id"])
-		contacts[id] = string(contact)
+		var contact Contact
+		json.Unmarshal(b, &contact)
+		contactMap[id] = contact
 		writer.WriteHeader(http.StatusNoContent)
 	} else {
 		writer.WriteHeader(http.StatusBadRequest)
 	}
 }
 
-func getContact(writer http.ResponseWriter, request *http.Request) {
-	v := mux.Vars(request)
-	id, _ := strconv.Atoi(v["id"])
-	writer.Write([]byte(contacts[id]))
-}
-
 func deleteContactHandler(writer http.ResponseWriter, request *http.Request) {
 	v := mux.Vars(request)
 	id, _ := strconv.Atoi(v["id"])
-	if _, ok := contacts[id]; !ok {
+	if _, ok := contactMap[id]; !ok {
 		writer.WriteHeader(http.StatusNotFound)
 		return
 	}
-	delete(contacts, id)
+	delete(contactMap, id)
 	writer.WriteHeader(http.StatusNoContent)
 }
 
 func nextId() int {
 	id := 1
-	for k, _ := range contacts {
-		if k > id {
+	for k, _ := range contactMap {
+		if k >= id {
 			id = k + 1
 		}
 	}

@@ -1,0 +1,13 @@
+GET http://localhost:8080/contacts
+
+###
+
+GET http://localhost:8080/contacts/1
+
+###
+
+POST http://localhost:8080/contacts
+
+{"Firstname": "Ralf", "Lastname": "Wirdemann"}
+
+###
