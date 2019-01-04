@@ -10,7 +10,7 @@ import (
 )
 
 type InvoicePresenter interface {
-	Present(i interface{})
+	Present(i domain.Invoice)
 }
 
 type JSONInvoicePresenter struct {
@@ -21,8 +21,9 @@ func NewJSONInvoicePresenter(w http.ResponseWriter) JSONInvoicePresenter {
 	return JSONInvoicePresenter{writer: w}
 }
 
-func (p JSONInvoicePresenter) Present(i interface{}) {
+func (p JSONInvoicePresenter) Present(i domain.Invoice) {
 	if b, err := json.Marshal(i); err == nil {
+		p.writer.Header().Set("Content-Type", "application/json")
 		p.writer.Write(b)
 	}
 }
@@ -46,9 +47,8 @@ func NewPDFInvoicePresenter(w http.ResponseWriter, r *http.Request) PDFInvoicePr
 	return PDFInvoicePresenter{w: w, r: r}
 }
 
-func (p PDFInvoicePresenter) Present(i interface{}) {
+func (p PDFInvoicePresenter) Present(i domain.Invoice) {
 	modTime := time.Now()
-	invoice := i.(domain.Invoice)
-	content := bytes.NewReader(invoice.ToPDF())
+	content := bytes.NewReader(i.ToPDF())
 	http.ServeContent(p.w, p.r, "invoice.pdf", modTime, content)
 }

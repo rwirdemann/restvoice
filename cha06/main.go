@@ -8,7 +8,6 @@ import (
 
 func main() {
 	repository := database.NewRepository()
-
 	adapter := rest.NewAdapter()
 
 	createInvoice := usecase.NewCreateInvoice(repository)
@@ -19,7 +18,6 @@ func main() {
 	createBookingHandler := adapter.MakeCreateBookingHandler(createBooking)
 	adapter.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}/bookings",
 		createBookingHandler).Methods("POST")
-
 
 	updateInvoice := usecase.NewUpdateInvoice(repository)
 	adapter.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}",

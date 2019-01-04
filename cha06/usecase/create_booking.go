@@ -4,15 +4,15 @@ import (
 	"github.com/rwirdemann/restvoice/cha05/domain"
 )
 
-type CreateBookingRepositoryPort interface {
+type CreateBookingPort interface {
 	CreateBooking(booking domain.Booking) (domain.Booking, error)
 }
 
 type CreateBooking struct {
-	repository CreateBookingRepositoryPort
+	repository CreateBookingPort
 }
 
-func NewCreateBooking(repository CreateBookingRepositoryPort) CreateBooking {
+func NewCreateBooking(repository CreateBookingPort) CreateBooking {
 	return CreateBooking{repository: repository}
 }
 

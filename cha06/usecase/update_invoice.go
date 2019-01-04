@@ -4,8 +4,7 @@ import (
 	"github.com/rwirdemann/restvoice/cha05/domain"
 )
 
-type UpdateInvoiceRepositoryPort interface {
-	GetInvoice(id int, join ...string) domain.Invoice
+type UpdateInvoicePort interface {
 	UpdateInvoice(invoice domain.Invoice) error
 	RateByProjectIdAndActivityId(projectId int, activityId int) domain.Rate
 	ActivityById(id int) domain.Activity
@@ -13,10 +12,10 @@ type UpdateInvoiceRepositoryPort interface {
 }
 
 type UpdateInvoice struct {
-	repository UpdateInvoiceRepositoryPort
+	repository UpdateInvoicePort
 }
 
-func NewUpdateInvoice(repository UpdateInvoiceRepositoryPort) UpdateInvoice {
+func NewUpdateInvoice(repository UpdateInvoicePort) UpdateInvoice {
 	return UpdateInvoice{repository: repository}
 }
 
