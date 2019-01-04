@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -19,11 +20,13 @@ var contactMap = make(map[int]Contact)
 
 func main() {
 	r := mux.NewRouter()
+	contactMap[1] = Contact{Firstname: "Ralf", Lastname: "Wirdemann"}
+
 	r.HandleFunc("/contacts", getContactsHandler).Methods("GET")
 	r.HandleFunc("/contacts/{id:[0-9]+}", getContactHandler).Methods("GET")
 	r.HandleFunc("/contacts", addContactHandler).Methods("POST")
-	r.HandleFunc("/contacts/{id[0-9]+}", updateContactHandler).Methods("PUT")
-	r.HandleFunc("/contacts/{id[0-9]+}", deleteContactHandler).Methods("DELETE")
+	r.HandleFunc("/contacts/{id:[0-9]+}", updateContactHandler).Methods("PUT")
+	r.HandleFunc("/contacts/{id:[0-9]+}", deleteContactHandler).Methods("DELETE")
 	http.ListenAndServe(":8080", r)
 }
 
@@ -97,7 +100,12 @@ func updateContactHandler(writer http.ResponseWriter, request *http.Request) {
 
 func deleteContactHandler(writer http.ResponseWriter, request *http.Request) {
 	v := mux.Vars(request)
-	id, _ := strconv.Atoi(v["id"])
+	id, err := strconv.Atoi(v["id"])
+	if err != nil {
+		log.Print(err)
+		writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if _, ok := contactMap[id]; !ok {
 		writer.WriteHeader(http.StatusNotFound)
 		return
