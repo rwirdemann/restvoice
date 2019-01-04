@@ -8,7 +8,7 @@ import (
 	"github.com/rwirdemann/restvoice/cha05/domain"
 )
 
-type MySQLRepository struct {
+type FakeRepository struct {
 	nextId     int
 	invoices   map[int]domain.Invoice
 	bookings   map[int]map[int]domain.Booking
@@ -18,7 +18,7 @@ type MySQLRepository struct {
 	rates      map[int]map[int]domain.Rate
 }
 
-func (r *MySQLRepository) GetActivities(userId string) []domain.Activity {
+func (r *FakeRepository) GetActivities(userId string) []domain.Activity {
 	var activities []domain.Activity
 	for _, a := range r.activities[userId] {
 		activities = append(activities, a)
@@ -26,8 +26,8 @@ func (r *MySQLRepository) GetActivities(userId string) []domain.Activity {
 	return activities
 }
 
-func NewMySQLRepository() *MySQLRepository {
-	r := MySQLRepository{}
+func NewMySQLRepository() *FakeRepository {
+	r := FakeRepository{}
 	r.invoices = make(map[int]domain.Invoice)
 	r.bookings = make(map[int]map[int]domain.Booking)
 	r.projects = make(map[int]domain.Project)
@@ -37,7 +37,7 @@ func NewMySQLRepository() *MySQLRepository {
 	return &r
 }
 
-func (r *MySQLRepository) GetBookingsByInvoiceId(id int) []domain.Booking {
+func (r *FakeRepository) GetBookingsByInvoiceId(id int) []domain.Booking {
 	var bookings []domain.Booking
 	for _, b := range r.bookings[id] {
 		bookings = append(bookings, b)
@@ -45,7 +45,7 @@ func (r *MySQLRepository) GetBookingsByInvoiceId(id int) []domain.Booking {
 	return bookings
 }
 
-func (r *MySQLRepository) GetInvoice(id int, join ...string) domain.Invoice {
+func (r *FakeRepository) GetInvoice(id int, join ...string) domain.Invoice {
 	i := r.invoices[id]
 	if len(join) > 0 {
 		if strings.Contains(join[0], "bookings") {
@@ -55,15 +55,15 @@ func (r *MySQLRepository) GetInvoice(id int, join ...string) domain.Invoice {
 	return i
 }
 
-func (r *MySQLRepository) GetProject(id int) domain.Project {
+func (r *FakeRepository) GetProject(id int) domain.Project {
 	return r.projects[id]
 }
 
-func (r *MySQLRepository) GetCustomer(id int) domain.Customer {
+func (r *FakeRepository) GetCustomer(id int) domain.Customer {
 	return r.customers[id]
 }
 
-func (r *MySQLRepository) CreateInvoice(invoice domain.Invoice) (domain.Invoice, error) {
+func (r *FakeRepository) CreateInvoice(invoice domain.Invoice) (domain.Invoice, error) {
 	if invoice.Id == 0 {
 		invoice.Id = r.getNextId()
 	}
@@ -74,12 +74,12 @@ func (r *MySQLRepository) CreateInvoice(invoice domain.Invoice) (domain.Invoice,
 	return invoice, nil
 }
 
-func (r *MySQLRepository) UpdateInvoice(invoice domain.Invoice) error {
+func (r *FakeRepository) UpdateInvoice(invoice domain.Invoice) error {
 	r.invoices[invoice.Id] = invoice
 	return nil
 }
 
-func (r *MySQLRepository) CreateBooking(booking domain.Booking) (domain.Booking, error) {
+func (r *FakeRepository) CreateBooking(booking domain.Booking) (domain.Booking, error) {
 	booking.Id = r.getNextId()
 	if bookings, ok := r.bookings[booking.InvoiceId]; ok {
 		bookings[booking.Id] = booking
@@ -91,7 +91,7 @@ func (r *MySQLRepository) CreateBooking(booking domain.Booking) (domain.Booking,
 	return booking, nil
 }
 
-func (r *MySQLRepository) CreateActivity(activity domain.Activity) {
+func (r *FakeRepository) CreateActivity(activity domain.Activity) {
 	activity.Id = r.getNextId()
 	activity.Updated = time.Now().UTC()
 	if activities, ok := r.activities[activity.UserId]; ok {
@@ -103,20 +103,20 @@ func (r *MySQLRepository) CreateActivity(activity domain.Activity) {
 	}
 }
 
-func (r *MySQLRepository) ActivityById(id int) domain.Activity {
+func (r *FakeRepository) ActivityById(id int) domain.Activity {
 	return r.activities[""][id]
 }
 
-func (r *MySQLRepository) RateByProjectIdAndActivityId(projectId int, activityId int) domain.Rate {
+func (r *FakeRepository) RateByProjectIdAndActivityId(projectId int, activityId int) domain.Rate {
 	return r.rates[projectId][activityId]
 }
 
-func (r *MySQLRepository) getNextId() int {
+func (r *FakeRepository) getNextId() int {
 	r.nextId = r.nextId + 1
 	return r.nextId
 }
 
-func (r *MySQLRepository) CreateRate(rate domain.Rate) {
+func (r *FakeRepository) CreateRate(rate domain.Rate) {
 	if projectRates, ok := r.rates[rate.ProjectId]; ok {
 		projectRates[rate.ActivityId] = rate
 	} else {
@@ -125,12 +125,12 @@ func (r *MySQLRepository) CreateRate(rate domain.Rate) {
 	}
 }
 
-func (r *MySQLRepository) CreateProject(p domain.Project) {
+func (r *FakeRepository) CreateProject(p domain.Project) {
 	p.Id = r.nextProjectId()
 	r.projects[p.Id] = p
 }
 
-func (r *MySQLRepository) nextProjectId() int {
+func (r *FakeRepository) nextProjectId() int {
 	nextId := 1
 	for _, i := range r.projects {
 		if i.Id >= nextId {

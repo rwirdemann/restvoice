@@ -52,6 +52,22 @@ func TestShouldAggregateAndUpdateInvoice(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestShouldUpdateState(t *testing.T) {
+	// Setup
+	repository := NewFakeRepository()
+	u := usecase.NewUpdateInvoice(repository)
+
+	// Run
+	i := domain.Invoice{Id: 1, Status: "ready for aggregation"}
+	repository.CreateInvoice(i)
+
+	u.Run(i)
+
+	// Assert
+	actual := repository.GetInvoice(1)
+	assert.Equal(t, "payment expected", actual.Status)
+}
+
 func TestShouldAggregateAndUpdateInvoiceWithFake(t *testing.T) {
 	// Setup
 	repository := NewFakeRepository()
@@ -90,25 +106,9 @@ func TestShouldAggregateAndUpdateInvoiceWithFake(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestShouldUpdateState(t *testing.T) {
-	// Setup
-	repository := NewFakeRepository()
-	u := usecase.NewUpdateInvoice(repository)
-
-	// Run
-	i := domain.Invoice{Id: 1, Status: "ready for aggregation"}
-	repository.CreateInvoice(i)
-
-	u.Run(i)
-
-	// Assert
-	actual := repository.GetInvoice(1)
-	assert.Equal(t, "payment expected", actual.Status)
-}
-
 func TestShouldUpdateStateWithMock(t *testing.T) {
 	// Setup
-	repository := &mocks.UpdateInvoiceRepositoryPort{}
+	repository := &mocks.UpdateInvoicePort{}
 	u := usecase.NewUpdateInvoice(repository)
 
 	// Setup mock interactions
@@ -121,24 +121,6 @@ func TestShouldUpdateStateWithMock(t *testing.T) {
 
 	// Assert
 	repository.AssertCalled(t, "UpdateInvoice", invoice)
-}
-
-func setupBaseData(repository *database.MySQLRepository) {
-	repository.CreateProject(domain.Project{Id: 1, Name: "Instanfoo.com"})
-	repository.CreateProject(domain.Project{Id: 2, Name: "Wo bleibt Kalle"})
-
-	repository.CreateActivity(domain.Activity{Id: 1, Name: "Programmierung"})
-	repository.CreateActivity(domain.Activity{Id: 2, Name: "Qualitätssicherung"})
-	repository.CreateActivity(domain.Activity{Id: 3, Name: "Projektmanagement"})
-
-	repository.CreateRate(domain.Rate{ProjectId: 1, ActivityId: 1, Price: 60}) // Programmierung
-	repository.CreateRate(domain.Rate{ProjectId: 1, ActivityId: 2, Price: 55}) // Qualitätssicherung
-	repository.CreateRate(domain.Rate{ProjectId: 2, ActivityId: 2, Price: 55}) // Qualitätssicherung
-	repository.CreateRate(domain.Rate{ProjectId: 2, ActivityId: 3, Price: 50}) // Projektmanagement
-}
-
-func NewFakeRepository() *database.MySQLRepository {
-	return database.NewMySQLRepository()
 }
 
 func TestHttpInvoiceAggregation(t *testing.T) {
@@ -183,4 +165,22 @@ func TestHttpInvoiceAggregation(t *testing.T) {
 	expected.AddPosition(2, "Projektmanagement", 7, 50)
 	expected.AddPosition(2, "Qualitätssicherung", 8, 55)
 	assert.Equal(t, expected, repository.GetInvoice(1))
+}
+
+func setupBaseData(repository *database.FakeRepository) {
+	repository.CreateProject(domain.Project{Id: 1, Name: "Instanfoo.com"})
+	repository.CreateProject(domain.Project{Id: 2, Name: "Wo bleibt Kalle"})
+
+	repository.CreateActivity(domain.Activity{Id: 1, Name: "Programmierung"})
+	repository.CreateActivity(domain.Activity{Id: 2, Name: "Qualitätssicherung"})
+	repository.CreateActivity(domain.Activity{Id: 3, Name: "Projektmanagement"})
+
+	repository.CreateRate(domain.Rate{ProjectId: 1, ActivityId: 1, Price: 60}) // Programmierung
+	repository.CreateRate(domain.Rate{ProjectId: 1, ActivityId: 2, Price: 55}) // Qualitätssicherung
+	repository.CreateRate(domain.Rate{ProjectId: 2, ActivityId: 2, Price: 55}) // Qualitätssicherung
+	repository.CreateRate(domain.Rate{ProjectId: 2, ActivityId: 3, Price: 50}) // Projektmanagement
+}
+
+func NewFakeRepository() *database.FakeRepository {
+	return database.NewMySQLRepository()
 }
