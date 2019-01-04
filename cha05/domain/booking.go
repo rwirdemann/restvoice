@@ -5,7 +5,7 @@ type Booking struct {
 	Day         int     `json:"day"`
 	Hours       float32 `json:"hours"`
 	Description string  `json:"description"`
-	InvoiceId   int     `json:"-"`                    // belongs to invoice
+	InvoiceId   int     `json:"invoiceId"`            // belongs to invoice
 	ProjectId   int     `json:"projectId,omitempty"`  // belongs to project
 	ActivityId  int     `json:"activityId,omitempty"` // belongs to activity
 }

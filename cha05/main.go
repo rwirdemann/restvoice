@@ -16,12 +16,20 @@ import (
 	"github.com/rwirdemann/restvoice/cha05/domain"
 )
 
+var repository = database.NewRepository()
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
+	customerId := repository.AddCustomer("3skills")
+	repository.AddProject("Instantfoo.com", customerId)
+	repository.AddActivity("Programmierung")
 }
 
 func main() {
 	r := mux.NewRouter()
+	r.HandleFunc("/customers", readCustomersHandler).Methods("GET")
+	r.HandleFunc("/customers/{customerId:[0-9]+}/projects", readProjectsHandler).Methods("GET")
+	r.HandleFunc("/activities", readActivitiesHandler).Methods("GET")
 	r.HandleFunc("/customers/{customerId:[0-9]+}/invoices", createInvoiceHandler).Methods("POST")
 	r.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}/bookings", createBookingHandler).Methods("POST")
 	r.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}/bookings/{bookingId:[0-9]+}", deleteBookingHandler).Methods("DELETE")
@@ -32,7 +40,27 @@ func main() {
 	http.ListenAndServe(":8080", r)
 }
 
-var repository = database.NewRepository()
+func readCustomersHandler(writer http.ResponseWriter, request *http.Request) {
+	customers := repository.GetCustomers()
+	b, _ := json.Marshal(customers)
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Write(b)
+}
+
+func readProjectsHandler(writer http.ResponseWriter, request *http.Request) {
+	customerId, _ := strconv.Atoi(mux.Vars(request)["customerId"])
+	projects := repository.GetProjects(customerId)
+	b, _ := json.Marshal(projects)
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Write(b)
+}
+
+func readActivitiesHandler(writer http.ResponseWriter, request *http.Request) {
+	activities := repository.GetActivities()
+	b, _ := json.Marshal(activities)
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Write(b)
+}
 
 func createInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 	// Read invoice data from request body
@@ -47,7 +75,7 @@ func createInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 	json.Unmarshal(body, &i)
 
 	i.CustomerId, _ = strconv.Atoi(mux.Vars(request)["customerId"])
-	created := repository.CreateInvoice(i)
+	created, _ := repository.CreateInvoice(i)
 	b, err := json.Marshal(created)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -73,7 +101,7 @@ func createBookingHandler(writer http.ResponseWriter, request *http.Request) {
 	// Create booking booking and marshal it to JSON
 	var booking domain.Booking
 	json.Unmarshal(body, &booking)
-	created := repository.CreateBooking(booking)
+	created, _ := repository.CreateBooking(booking)
 	created.InvoiceId, _ = strconv.Atoi(mux.Vars(request)["invoiceId"])
 	b, err := json.Marshal(created)
 	if err != nil {
@@ -111,10 +139,10 @@ func updateInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 
 	// Aggregate positions
 	if i.Status == "ready for aggregation" {
-		bookings := repository.BookingsByInvoiceId(i.Id)
+		bookings := repository.GetBookingsByInvoiceId(i.Id)
 		for _, b := range bookings {
-			activity := repository.GetActivity(b.ActivityId)
-			rate := repository.GetRate(b.ProjectId, b.ActivityId)
+			activity := repository.ActivityById(b.ActivityId)
+			rate := repository.RateByProjectIdAndActivityId(b.ProjectId, b.ActivityId)
 
 			i.AddPosition(b.ProjectId, activity.Name, b.Hours, rate.Price)
 		}

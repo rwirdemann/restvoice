@@ -1,7 +1,7 @@
 package domain
 
 type Project struct {
-	Id         int
-	CustomerId int
-	Name       string
+	Id         int    `json:"id"`
+	CustomerId int    `json:"customerId"`
+	Name       string `json:"name"`
 }

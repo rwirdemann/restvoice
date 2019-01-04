@@ -18,7 +18,7 @@ type Invoice struct {
 	CustomerId int                         `json:"customerId"`
 	Positions  map[int]map[string]Position `json:"positions,omitempty"`
 	Bookings   []Booking                   `json:"-"`
-	Updated    time.Time
+	Updated    time.Time                   `json:"updated,omitempty"`
 }
 
 func (i *Invoice) AddBooking() {
