@@ -1,13 +1,17 @@
 package rest
 
 import (
+	"crypto/md5"
 	"crypto/rsa"
+	"encoding/hex"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
@@ -77,4 +81,57 @@ func verifyJWT(token string) bool {
 	})
 
 	return err == nil && t.Valid
+}
+
+const password = "time"
+const realm = "restvoice"
+const nonce = "UAZs1dp3wX5BtXEpoCXKO2lHhap564rX"
+const opaque = "XF3tAJ3483jUUAUJJQJJAHDQP01MJHD"
+const cnonce = "oaSHizKi0RcJXmFE2TMtW8IefL799dWU"
+const nc = "00000001"
+const qop = "auth"
+const method = "POST"
+
+func DigestAuth(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authorization := r.Header.Get("Authorization")
+		if strings.HasPrefix(authorization, "Digest") {
+			authFields := digestParts(authorization)
+			h1 := hash(authFields["username"] + ":" + authFields["realm"] + ":" + password)
+			h2 := hash(r.Method + ":" + authFields["uri"])
+			h3 := hash(h1 + ":" +
+				authFields["nonce"] + ":" +
+				authFields["nc"] + ":" +
+				authFields["cnonce"] + ":" +
+				authFields["qop"] + ":" + h2)
+			if h3 == authFields["response"] {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+		auth := fmt.Sprintf("Digest realm=\"%s\" qop=\"auth\" nonce=\"%s\" opaque=\"%s\"", realm, nonce, opaque)
+		w.Header().Set("WWW-Authenticate", auth)
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+}
+
+func hash(s string) string {
+	h := md5.New()
+	io.WriteString(h, s)
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func digestParts(authorization string) map[string]string {
+	result := map[string]string{}
+	wantedHeaders := []string{"username", "nonce", "realm", "qop", "uri", "nc", "response", "opaque", "cnonce"}
+	requestHeaders := strings.Split(authorization, ",")
+	for _, r := range requestHeaders {
+		for _, w := range wantedHeaders {
+			if strings.Contains(r, " "+w) {
+				v := strings.Split(r, "=")[1]
+				result[w] = strings.Trim(v, `"`)
+			}
+		}
+	}
+	return result
 }
