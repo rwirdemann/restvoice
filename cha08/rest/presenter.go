@@ -9,6 +9,10 @@ import (
 	"github.com/rwirdemann/restvoice/cha05/domain"
 )
 
+type InvoicePresenter interface {
+	Present(i interface{})
+}
+
 type JSONInvoicePresenter struct {
 	writer http.ResponseWriter
 }
@@ -32,10 +36,6 @@ func (p DefaultPresenter) Present(i interface{}) {
 
 func NewDefaultPresenter() DefaultPresenter {
 	return DefaultPresenter{}
-}
-
-type InvoicePresenter interface {
-	Present(i interface{})
 }
 
 type PDFInvoicePresenter struct {
