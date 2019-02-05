@@ -27,7 +27,8 @@ func main() {
 	r.HandleFunc("/contacts", addContactHandler).Methods("POST")
 	r.HandleFunc("/contacts/{id:[0-9]+}", updateContactHandler).Methods("PUT")
 	r.HandleFunc("/contacts/{id:[0-9]+}", deleteContactHandler).Methods("DELETE")
-	http.ListenAndServe(":8080", r)
+	log.Printf("Service listening on http://localhost:8080...")
+	_ = http.ListenAndServe(":8080", r)
 }
 
 func getContactsHandler(writer http.ResponseWriter, request *http.Request) {
