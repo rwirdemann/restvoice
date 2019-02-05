@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/rwirdemann/restvoice/cha05/domain"
+	"github.com/rwirdemann/restvoice/kapitel05/domain"
 )
 
 type CreateBookingPort interface {

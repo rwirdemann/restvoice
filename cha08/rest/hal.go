@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/rwirdemann/restvoice/cha05/domain"
+	"github.com/rwirdemann/restvoice/kapitel05/domain"
 )
 
 type Link struct {

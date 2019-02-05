@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/rwirdemann/restvoice/cha05/domain"
+	"github.com/rwirdemann/restvoice/kapitel05/domain"
 )
 
 type JSONInvoicePresenter struct {

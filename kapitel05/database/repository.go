@@ -1,6 +1,6 @@
 package database
 
-import "github.com/rwirdemann/restvoice/cha05/domain"
+import "github.com/rwirdemann/restvoice/kapitel05/domain"
 
 type Repository struct {
 	customers  map[int]domain.Customer
@@ -19,7 +19,7 @@ func NewRepository() *Repository {
 		bookings:   make(map[int]domain.Booking),
 		activities: make(map[int]domain.Activity),
 		rates:      make(map[int]map[int]domain.Rate)}
-	r.CreateInvoice(domain.Invoice{Month: 6, Year: 2018, CustomerId: 1})
+	_, _ = r.CreateInvoice(domain.Invoice{Month: 6, Year: 2018, CustomerId: 1})
 	return r
 }
 
@@ -68,7 +68,7 @@ func (r *Repository) AddProject(name string, customerId int) int {
 }
 
 func (r *Repository) CreateInvoice(invoice domain.Invoice) (domain.Invoice, error) {
-	invoice.Id = r.nextId()
+	invoice.Id = r.nextInvoiceId()
 	invoice.Status = "open"
 	invoice.Bookings = []domain.Booking{}
 	r.invoices[invoice.Id] = invoice
@@ -104,7 +104,7 @@ func (r *Repository) FindById(id int) (domain.Invoice, bool) {
 	return i, ok
 }
 
-func (r *Repository) nextId() int {
+func (r *Repository) nextInvoiceId() int {
 	nextId := 1
 	for _, v := range r.invoices {
 		if v.Id >= nextId {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/rwirdemann/restvoice/cha05/database"
 	"github.com/rwirdemann/restvoice/cha06/rest"
 	"github.com/rwirdemann/restvoice/cha06/usecase"
+	"github.com/rwirdemann/restvoice/kapitel05/database"
 )
 
 func main() {

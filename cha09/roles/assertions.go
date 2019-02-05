@@ -12,7 +12,7 @@ import (
 	"github.com/gorilla/mux"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/rwirdemann/restvoice/cha05/domain"
+	"github.com/rwirdemann/restvoice/kapitel05/domain"
 )
 
 type RoleRepository interface {

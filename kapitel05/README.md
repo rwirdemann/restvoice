@@ -2,6 +2,7 @@
 
 ## Start
 ```
+cd kapitel05
 go run main.go
 ```
 ## URIs
@@ -9,6 +10,12 @@ go run main.go
 ```
 curl -X GET \
   http://localhost:8080/customers
+```
+
+### GET /customers/{customerId}/projects
+```
+curl -X GET \
+  http://localhost:8080/customers/1/projects
 ```
 
 ### POST /customers/{customerId}/invoices
@@ -20,12 +27,6 @@ curl -X POST \
     "month": 6,
     "year": 2018
 }'
-```
-
-### GET /customers/{customerId}/projects
-```
-curl -X GET \
-  http://localhost:8080/customers/1/projects
 ```
 
 ### GET /activities
@@ -53,7 +54,7 @@ curl -X DELETE \
   http://localhost:8080/customers/1/invoices/2/bookings/1
 ```
 
-### PUT /customers/1/invoices/1
+### PUT /customers/{customerId}/invoices/{invoiceId}
 ```
 curl -X PUT \
   http://localhost:8080/customers/1/invoices/1 \
@@ -65,8 +66,7 @@ curl -X PUT \
 }'
 ```
 
-### GET 
-/customers/1/invoices/1234
+### GET /customers/{customerId}/invoices/{invoiceId}
 
 ```
 curl -X GET \

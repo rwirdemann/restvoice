@@ -9,4 +9,7 @@ git clone https://github.com/rwirdemann/restvoice.git
 go get github.com/gorilla/mux
 ```
 
-## [Kapitel 4: HTTP und JSON](kapitel04/README.md)
+## Inhaltsverzeichnis
+[Kapitel 4: HTTP und JSON](kapitel04/README.md)
+
+[Kapitel 5: Restvoice](kapitel05/README.md)

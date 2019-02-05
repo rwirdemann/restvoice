@@ -7,13 +7,12 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/rwirdemann/restvoice/cha05/database"
-	"github.com/rwirdemann/restvoice/cha05/domain"
+	"github.com/rwirdemann/restvoice/kapitel05/database"
+	"github.com/rwirdemann/restvoice/kapitel05/domain"
 )
 
 var repository = database.NewRepository()
@@ -37,14 +36,14 @@ func main() {
 	r.HandleFunc("/customers/{customerId:[0-9]+}/invoices/{invoiceId:[0-9]+}", readInvoiceHandler).Methods("GET")
 
 	fmt.Println("Restvoice started on http://localhost:8080...")
-	http.ListenAndServe(":8080", r)
+	_ = http.ListenAndServe(":8080", r)
 }
 
-func readCustomersHandler(writer http.ResponseWriter, request *http.Request) {
+func readCustomersHandler(writer http.ResponseWriter, _ *http.Request) {
 	customers := repository.GetCustomers()
 	b, _ := json.Marshal(customers)
 	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(b)
+	_, _ = writer.Write(b)
 }
 
 func readProjectsHandler(writer http.ResponseWriter, request *http.Request) {
@@ -52,14 +51,14 @@ func readProjectsHandler(writer http.ResponseWriter, request *http.Request) {
 	projects := repository.GetProjects(customerId)
 	b, _ := json.Marshal(projects)
 	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(b)
+	_, _ = writer.Write(b)
 }
 
-func readActivitiesHandler(writer http.ResponseWriter, request *http.Request) {
+func readActivitiesHandler(writer http.ResponseWriter, _ *http.Request) {
 	activities := repository.GetActivities()
 	b, _ := json.Marshal(activities)
 	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(b)
+	_, _ = writer.Write(b)
 }
 
 func createInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
@@ -72,13 +71,13 @@ func createInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 
 	// CreateInvoice invoice and marshal it from JSON
 	var i domain.Invoice
-	json.Unmarshal(body, &i)
+	_ = json.Unmarshal(body, &i)
 
 	i.CustomerId, _ = strconv.Atoi(mux.Vars(request)["customerId"])
 	created, _ := repository.CreateInvoice(i)
 	b, err := json.Marshal(created)
 	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -87,7 +86,7 @@ func createInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Location", location)
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusCreated)
-	writer.Write(b)
+	_, _ = writer.Write(b)
 }
 
 func createBookingHandler(writer http.ResponseWriter, request *http.Request) {
@@ -100,7 +99,10 @@ func createBookingHandler(writer http.ResponseWriter, request *http.Request) {
 
 	// Create booking booking and marshal it to JSON
 	var booking domain.Booking
-	json.Unmarshal(body, &booking)
+	if err := json.Unmarshal(body, &booking); err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+	}
+
 	created, _ := repository.CreateBooking(booking)
 	created.InvoiceId, _ = strconv.Atoi(mux.Vars(request)["invoiceId"])
 	b, err := json.Marshal(created)
@@ -114,7 +116,7 @@ func createBookingHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Location", location)
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusCreated)
-	writer.Write(b)
+	_, _ = writer.Write(b)
 }
 
 func deleteBookingHandler(writer http.ResponseWriter, request *http.Request) {
@@ -133,7 +135,10 @@ func updateInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 
 	// Unmarshal and update invoice
 	var i domain.Invoice
-	json.Unmarshal(body, &i)
+	if err := json.Unmarshal(body, &i); err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+	}
+
 	i.Id, _ = strconv.Atoi(mux.Vars(request)["invoiceId"])
 	i.CustomerId, _ = strconv.Atoi(mux.Vars(request)["customerId"])
 
@@ -166,21 +171,8 @@ func readInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 	case "application/json":
 		b, _ := json.Marshal(i)
 		writer.Header().Set("Content-Type", "application/json")
-		writer.Write(b)
+		_, _ = writer.Write(b)
 	default:
 		writer.WriteHeader(http.StatusNotAcceptable)
-	}
-}
-
-func basicAuth(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if username, password, ok := r.BasicAuth(); ok {
-			if username == os.Getenv("USERNAME") && password == os.Getenv("PASSWORD") {
-				next.ServeHTTP(w, r)
-				return
-			}
-		}
-		w.Header().Set("WWW-Authenticate", "Basic realm=\"example@restvoice.org\"")
-		w.WriteHeader(http.StatusUnauthorized)
 	}
 }

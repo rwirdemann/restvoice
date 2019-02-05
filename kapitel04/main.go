@@ -91,7 +91,7 @@ func updateContactHandler(writer http.ResponseWriter, request *http.Request) {
 		v := mux.Vars(request)
 		id, _ := strconv.Atoi(v["id"])
 		var contact Contact
-		json.Unmarshal(b, &contact)
+		_ = json.Unmarshal(b, &contact)
 		contactMap[id] = contact
 		writer.WriteHeader(http.StatusNoContent)
 	} else {
