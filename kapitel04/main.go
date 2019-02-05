@@ -31,7 +31,7 @@ func main() {
 	_ = http.ListenAndServe(":8080", r)
 }
 
-func getContactsHandler(writer http.ResponseWriter, request *http.Request) {
+func getContactsHandler(writer http.ResponseWriter, _ *http.Request) {
 	var s []Contact
 	for _, c := range contactMap {
 		s = append(s, c)
@@ -43,7 +43,7 @@ func getContactsHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(b)
+	_, _ = writer.Write(b)
 }
 
 func getContactHandler(writer http.ResponseWriter, request *http.Request) {
@@ -61,7 +61,7 @@ func getContactHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(b)
+	_, _ = writer.Write(b)
 }
 
 func addContactHandler(writer http.ResponseWriter, request *http.Request) {
@@ -72,7 +72,7 @@ func addContactHandler(writer http.ResponseWriter, request *http.Request) {
 		}
 		id := nextId()
 		var contact Contact
-		json.Unmarshal(b, &contact)
+		_ = json.Unmarshal(b, &contact)
 		contactMap[id] = contact
 		url := request.URL.String()
 		writer.Header().Set("Location", fmt.Sprintf("%s/%d", url, id))
@@ -117,7 +117,7 @@ func deleteContactHandler(writer http.ResponseWriter, request *http.Request) {
 
 func nextId() int {
 	id := 1
-	for k, _ := range contactMap {
+	for k := range contactMap {
 		if k >= id {
 			id = k + 1
 		}

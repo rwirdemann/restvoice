@@ -9,15 +9,4 @@ git clone https://github.com/rwirdemann/restvoice.git
 go get github.com/gorilla/mux
 ```
 
-## Kapitel 4: HTTP und JSON
-
-### Start
-```
-go run main.go
-```
-
-### URIs
-```
-GET http://localhost:8080/contacts
-```
-
+## [Kapitel 4: HTTP und JSON](kapitel04/README.md)

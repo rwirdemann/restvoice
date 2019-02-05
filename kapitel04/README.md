@@ -2,14 +2,19 @@
 
 ## Start
 ```
+cd kapitel04
 go run main.go
 ```
+
 ## URIs
 ### GET /contacts
+
 ```
 curl -X GET \
-  http://localhost:8080/contacts
+  http://localhost:8080/contacts \
+  -H 'cache-control: no-cache' 
 ```
+
 
 ### GET /contacts/{id}
 ```
