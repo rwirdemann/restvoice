@@ -1,6 +1,6 @@
 # RESTful Go APIs
 
-Dieses Repository enthält die Code-Beispiel zum Buch [RESTful Go APIs](https://www.amazon.de/RESTful-APIs-Implementierung-leichtgewichtiger-Hypermedia/dp/3446457097/ref=sr_1_1?ie=UTF8&qid=1549368669&sr=8-1&keywords=restful+go+apis) von Ralf Wirdemann.
+Dieses Repository enthält die Code-Beispiele zum Buch [RESTful Go APIs](https://www.amazon.de/RESTful-APIs-Implementierung-leichtgewichtiger-Hypermedia/dp/3446457097/ref=sr_1_1?ie=UTF8&qid=1549368669&sr=8-1&keywords=restful+go+apis) von Ralf Wirdemann.
 
 ## Setup
 ```
