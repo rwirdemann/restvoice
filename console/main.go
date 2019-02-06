@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rwirdemann/restvoice/cha06/database"
 	"github.com/rwirdemann/restvoice/console/cli"
+	"github.com/rwirdemann/restvoice/kapitel06/database"
 
-	"github.com/rwirdemann/restvoice/cha06/usecase"
+	"github.com/rwirdemann/restvoice/kapitel06/usecase"
 )
 
 func main() {
-	repository := database.NewMySQLRepository()
+	repository := database.NewFakeRepository()
 	createInvoice := usecase.NewCreateInvoice(repository)
 
 	cliAdapter := cli.Adapter{}

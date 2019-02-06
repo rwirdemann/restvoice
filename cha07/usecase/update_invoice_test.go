@@ -7,17 +7,17 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/rwirdemann/restvoice/cha06/database"
-	"github.com/rwirdemann/restvoice/cha06/rest"
-	"github.com/rwirdemann/restvoice/cha06/usecase"
 	"github.com/rwirdemann/restvoice/cha07/usecase/mocks"
 	"github.com/rwirdemann/restvoice/kapitel05/domain"
+	"github.com/rwirdemann/restvoice/kapitel06/database"
+	"github.com/rwirdemann/restvoice/kapitel06/rest"
+	"github.com/rwirdemann/restvoice/kapitel06/usecase"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestShouldAggregateAndUpdateInvoice(t *testing.T) {
 	// Setup
-	repository := database.NewMySQLRepository()
+	repository := database.NewFakeRepository()
 	setupBaseData(repository)
 	u := usecase.NewUpdateInvoice(repository)
 
@@ -182,5 +182,5 @@ func setupBaseData(repository *database.FakeRepository) {
 }
 
 func NewFakeRepository() *database.FakeRepository {
-	return database.NewMySQLRepository()
+	return database.NewFakeRepository()
 }

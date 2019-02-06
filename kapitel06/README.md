@@ -2,8 +2,10 @@
 
 ## Start
 ```
+cd kapitel06
 go run main.go
 ```
+
 ## URIs
 ### POST /customers/{customerId}/invoices
 ```
@@ -16,7 +18,7 @@ curl -X POST \
 }'
 ```
 
-### POST /customers/1/invoices/2/bookings
+### POST /customers/{customerId}/invoices/{invoiceId}/bookings
 ```
 curl -X POST \
   http://localhost:8080/customers/1/invoices/2/bookings \
@@ -30,7 +32,7 @@ curl -X POST \
 }'
 ```
 
-### PUT /customers/1/invoices/2
+### PUT /customers/{customerId}/invoices/{invoiceId}
 ```
 curl -X PUT \
   http://localhost:8080/customers/1/invoices/2 \
@@ -40,6 +42,12 @@ curl -X PUT \
     "year": 2018,
     "status": "ready for aggregation"
 }'
+```
+
+### GET /customers/{customerId}/invoices/{invoiceId}
+```
+curl -X GET \
+  http://localhost:8080/customers/1/invoices/2
 ```
 
 

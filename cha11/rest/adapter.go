@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rwirdemann/restvoice/cha06/usecase"
+	"github.com/rwirdemann/restvoice/kapitel06/usecase"
 
 	"github.com/gorilla/mux"
 )

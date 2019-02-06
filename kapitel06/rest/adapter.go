@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/rwirdemann/restvoice/cha06/usecase"
+	"github.com/rwirdemann/restvoice/kapitel06/usecase"
 
 	"github.com/gorilla/mux"
 	"github.com/rwirdemann/restvoice/kapitel05/domain"
@@ -23,7 +23,7 @@ func NewAdapter() Adapter {
 
 func (a Adapter) ListenAndServe() {
 	log.Printf("Listening on http://0.0.0.0%s\n", ":8080")
-	http.ListenAndServe(":8080", a.r)
+	_ = http.ListenAndServe(":8080", a.r)
 }
 
 func (a Adapter) HandleFunc(path string, f func(http.ResponseWriter,
@@ -56,7 +56,7 @@ func (a Adapter) writeInvoice(invoice domain.Invoice, w http.ResponseWriter) err
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(b)
+	_, _ = w.Write(b)
 	return nil
 }
 

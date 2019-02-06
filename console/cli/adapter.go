@@ -3,8 +3,8 @@ package cli
 import (
 	"flag"
 
-	"github.com/rwirdemann/restvoice/cha06/usecase"
 	"github.com/rwirdemann/restvoice/kapitel05/domain"
+	"github.com/rwirdemann/restvoice/kapitel06/usecase"
 )
 
 type Adapter struct {

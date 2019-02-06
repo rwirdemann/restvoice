@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/rwirdemann/restvoice/cha06/usecase"
 	"github.com/rwirdemann/restvoice/kapitel05/domain"
+	"github.com/rwirdemann/restvoice/kapitel06/usecase"
 
 	"github.com/gorilla/mux"
 )

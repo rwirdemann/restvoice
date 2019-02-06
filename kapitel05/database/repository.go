@@ -165,7 +165,3 @@ func (r *Repository) GetInvoice(id int, join ...string) domain.Invoice {
 func (r *Repository) RateByProjectIdAndActivityId(projectId int, activityId int) domain.Rate {
 	return domain.Rate{}
 }
-
-func (r *Repository) UpdateInvoice(invoice domain.Invoice) error {
-	return nil
-}

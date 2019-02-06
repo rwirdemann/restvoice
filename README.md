@@ -13,3 +13,5 @@ go get github.com/gorilla/mux
 [Kapitel 4: HTTP und JSON](kapitel04/README.md)
 
 [Kapitel 5: Restvoice](kapitel05/README.md)
+
+[Kapitel 6: Design](kapitel06/README.md)

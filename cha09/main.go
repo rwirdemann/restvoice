@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/rwirdemann/restvoice/cha06/database"
-	"github.com/rwirdemann/restvoice/cha06/usecase"
 	"github.com/rwirdemann/restvoice/cha09/rest"
 	"github.com/rwirdemann/restvoice/cha09/roles"
+	"github.com/rwirdemann/restvoice/kapitel06/database"
+	"github.com/rwirdemann/restvoice/kapitel06/usecase"
 )
 
 func main() {
-	repository := database.NewMySQLRepository()
+	repository := database.NewFakeRepository()
 	r := rest.NewAdapter()
 
 	createInvoiceHandler := r.MakeCreateInvoiceHandler(usecase.NewCreateInvoice(repository))

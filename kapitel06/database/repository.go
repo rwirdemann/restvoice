@@ -26,7 +26,7 @@ func (r *FakeRepository) GetActivities(userId string) []domain.Activity {
 	return activities
 }
 
-func NewMySQLRepository() *FakeRepository {
+func NewFakeRepository() *FakeRepository {
 	r := FakeRepository{}
 	r.invoices = make(map[int]domain.Invoice)
 	r.bookings = make(map[int]map[int]domain.Booking)
