@@ -7,15 +7,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/rwirdemann/restvoice/cha07/usecase/mocks"
 	"github.com/rwirdemann/restvoice/kapitel05/domain"
 	"github.com/rwirdemann/restvoice/kapitel06/database"
 	"github.com/rwirdemann/restvoice/kapitel06/rest"
 	"github.com/rwirdemann/restvoice/kapitel06/usecase"
+	"github.com/rwirdemann/restvoice/kapitel07/usecase/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestShouldAggregateAndUpdateInvoice(t *testing.T) {
+func TestAggregateBookings(t *testing.T) {
 	// Setup
 	repository := database.NewFakeRepository()
 	setupBaseData(repository)
@@ -38,6 +38,7 @@ func TestShouldAggregateAndUpdateInvoice(t *testing.T) {
 		ActivityId: 2, Hours: 8, Description: "Suche getestet"})
 
 	invoice := domain.Invoice{Id: 1, Status: "ready for aggregation"}
+	repository.CreateInvoice(invoice)
 
 	// Run
 	u.Run(invoice)
@@ -66,6 +67,23 @@ func TestShouldUpdateState(t *testing.T) {
 	// Assert
 	actual := repository.GetInvoice(1)
 	assert.Equal(t, "payment expected", actual.Status)
+}
+
+func TestShouldUpdateStateWithMock(t *testing.T) {
+	// Setup
+	repository := &mocks.UpdateInvoicePort{}
+	u := usecase.NewUpdateInvoice(repository)
+
+	// Setup mock interactions
+	repository.On("GetBookingsByInvoiceId", 1).Return(nil)
+	invoice := domain.Invoice{Id: 1, Status: "payment expected"}
+	repository.On("UpdateInvoice", invoice).Return(nil)
+
+	// Run
+	u.Run(invoice)
+
+	// Assert
+	repository.AssertCalled(t, "UpdateInvoice", invoice)
 }
 
 func TestShouldAggregateAndUpdateInvoiceWithFake(t *testing.T) {
@@ -104,23 +122,6 @@ func TestShouldAggregateAndUpdateInvoiceWithFake(t *testing.T) {
 	expected.AddPosition(2, "Qualitätssicherung", 8, 55)
 	actual := repository.GetInvoice(1)
 	assert.Equal(t, expected, actual)
-}
-
-func TestShouldUpdateStateWithMock(t *testing.T) {
-	// Setup
-	repository := &mocks.UpdateInvoicePort{}
-	u := usecase.NewUpdateInvoice(repository)
-
-	// Setup mock interactions
-	repository.On("GetBookingsByInvoiceId", 1).Return(nil)
-	invoice := domain.Invoice{Id: 1, Status: "payment expected"}
-	repository.On("UpdateInvoice", invoice).Return(nil)
-
-	// Run
-	u.Run(invoice)
-
-	// Assert
-	repository.AssertCalled(t, "UpdateInvoice", invoice)
 }
 
 func TestHttpInvoiceAggregation(t *testing.T) {

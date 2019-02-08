@@ -15,3 +15,5 @@ go get github.com/gorilla/mux
 [Kapitel 5: Restvoice](kapitel05/README.md)
 
 [Kapitel 6: Design](kapitel06/README.md)
+
+[Kapitel 7: Testing](kapitel07/README.md)
