@@ -23,5 +23,11 @@ curl -X POST \
 curl -X GET \
   http://localhost:8080/invoice/1 \
   -H 'Content-Type: application/json' \
-  -H 'cache-control: no-cache'
+```
+
+### GET /invoice/{invoiceId}?expand=bookings
+```
+curl -X GET \
+  'http://localhost:8080/invoice/2?expand=bookings' \
+  -H 'Content-Type: application/json' \
 ```
