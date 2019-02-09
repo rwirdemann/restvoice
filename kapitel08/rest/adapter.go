@@ -83,7 +83,7 @@ func (a Adapter) InvoicePresenter(w http.ResponseWriter, r *http.Request) (Invoi
 	case "application/pdf":
 		return NewPDFInvoicePresenter(w, r), true
 	default:
-		return NewJSONInvoicePresenter(w), true
+		return NewDefaultPresenter(), true
 	}
 }
 

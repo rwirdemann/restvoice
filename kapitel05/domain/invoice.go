@@ -21,36 +21,36 @@ type Invoice struct {
 	Updated    time.Time                   `json:"updated,omitempty"`
 }
 
-func (i *Invoice) AddBooking() {
+func (invoice *Invoice) AddBooking() {
 
 }
-func (i *Invoice) AddPosition(projectId int, activity string, hours float32,
+func (invoice *Invoice) AddPosition(projectId int, activity string, hours float32,
 	rate float32) {
-	if i.Positions == nil {
-		i.Positions = make(map[int]map[string]Position)
+	if invoice.Positions == nil {
+		invoice.Positions = make(map[int]map[string]Position)
 	}
 
-	if i.Positions[projectId] == nil {
-		i.Positions[projectId] = make(map[string]Position)
+	if invoice.Positions[projectId] == nil {
+		invoice.Positions[projectId] = make(map[string]Position)
 	}
 
-	if p, ok := i.Positions[projectId][activity]; ok {
+	if p, ok := invoice.Positions[projectId][activity]; ok {
 		p.Hours = p.Hours + hours
 		p.Price = p.Price + hours*rate
-		i.Positions[projectId][activity] = p
+		invoice.Positions[projectId][activity] = p
 	} else {
 		position := Position{Hours: hours, Price: hours * rate}
-		i.Positions[projectId][activity] = position
+		invoice.Positions[projectId][activity] = position
 	}
 }
 
-func (i *Invoice) ToPDF() []byte {
+func (invoice *Invoice) ToPDF() []byte {
 	dat, _ := ioutil.ReadFile("/tmp/invoice.pdf")
 	return dat
 }
 
-func (i Invoice) IsReadyForAggregation() bool {
-	return i.Status == "ready for aggregation"
+func (invoice Invoice) IsReadyForAggregation() bool {
+	return invoice.Status == "ready for aggregation"
 }
 
 type Operation string
