@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"io/ioutil"
+	"github.com/rwirdemann/restvoice/kapitel09/identityprovider/secret"
 )
 
 type User struct {
@@ -15,17 +15,6 @@ type CustomClaims struct {
 	Name  string `json:"name"`
 	Admin bool   `json:"admin"`
 	jwt.StandardClaims
-}
-
-var privateKey []byte
-
-func init() {
-	var err error
-	privateKey, err = ioutil.ReadFile("restvoice.key")
-	if err != nil {
-		panic(err)
-	}
-
 }
 
 func main() {
@@ -43,10 +32,13 @@ func token(name string, password string) string {
 		Subject: "restvoice.org",
 	}}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signed, _ := token.SignedString(privateKey)
+	signed, err := token.SignedString([]byte(secret.Shared))
+	if err != nil {
+		panic(err)
+	}
 	return signed
 }
 
-func login(user string, password string) (User, bool) {
+func login(_ string, _ string) (User, bool) {
 	return User{"Jo Brunner", true}, true
 }

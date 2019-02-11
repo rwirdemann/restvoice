@@ -2,12 +2,10 @@ package rest
 
 import (
 	"crypto/md5"
-	"crypto/rsa"
 	"encoding/hex"
 	"fmt"
+	"github.com/rwirdemann/restvoice/kapitel09/identityprovider/secret"
 	"io"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -15,22 +13,6 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 )
-
-const publicKeyFilePath = "restvoice.pub"
-
-var publicKey *rsa.PublicKey
-
-func init() {
-	var b []byte
-	var err error
-	if b, err = ioutil.ReadFile(publicKeyFilePath); err != nil {
-		log.Fatalf("Could not open public key file: %s", publicKeyFilePath)
-	}
-
-	if publicKey, err = jwt.ParseRSAPublicKeyFromPEM(b); err != nil {
-		log.Fatalf("Could not parse public key from pem file")
-	}
-}
 
 func BasicAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -74,10 +56,10 @@ func extractJwtFromHeader(header http.Header) (jwt string) {
 
 func verifyJWT(token string) bool {
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return publicKey, nil
+		return []byte(secret.Shared), nil
 	})
 
 	return err == nil && t.Valid

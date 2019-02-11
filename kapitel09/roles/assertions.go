@@ -1,37 +1,21 @@
 package roles
 
 import (
-	"crypto/rsa"
 	"fmt"
-	"io/ioutil"
-	"log"
+	"github.com/rwirdemann/restvoice/kapitel09/identityprovider/secret"
 	"net/http"
 	"regexp"
 	"strconv"
 
 	"github.com/gorilla/mux"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/rwirdemann/restvoice/kapitel05/domain"
 )
 
 type RoleRepository interface {
 	GetCustomer(id int) domain.Customer
 	GetInvoice(id int, join ...string) domain.Invoice
-}
-
-const publicKeyFilePath = "restvoice.pub"
-
-var publicKey *rsa.PublicKey
-
-func init() {
-	if f, err := ioutil.ReadFile(publicKeyFilePath); err == nil {
-		if publicKey, err = jwt.ParseRSAPublicKeyFromPEM(f); err != nil {
-			log.Fatalf("Could not parse public key from pem file")
-		}
-	} else {
-		log.Fatalf("Could not open public key file: %s", publicKeyFilePath)
-	}
 }
 
 func AssertAdmin(next http.HandlerFunc) http.HandlerFunc {
@@ -48,10 +32,10 @@ func AssertAdmin(next http.HandlerFunc) http.HandlerFunc {
 
 func isAdmin(token string) bool {
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return publicKey, nil
+		return []byte(secret.Shared), nil
 	})
 
 	if err == nil {
@@ -97,10 +81,10 @@ func extractJwtFromHeader(header http.Header) (jwt string) {
 
 func claim(token string, key string) string {
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return publicKey, nil
+		return []byte(secret.Shared), nil
 	})
 
 	if err == nil {
