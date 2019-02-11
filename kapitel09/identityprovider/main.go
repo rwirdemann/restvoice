@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"io/ioutil"
-
-	jwt "github.com/dgrijalva/jwt-go"
 )
 
 type User struct {
