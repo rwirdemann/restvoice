@@ -22,3 +22,5 @@ go get github.com/gorilla/mux
 [Kapitel 8: Hypermedia als Motor](kapitel08/README.md)
 
 [Kapitel 9: Sicherheit](kapitel09/README.md)
+
+[Kapitel 11: Caching](kapitel11/README.md)
