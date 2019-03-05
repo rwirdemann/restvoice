@@ -20,7 +20,7 @@ Copy token
 cd ..
 go run main.go
 
-Add copied token to Authorization header of your request. See samples below.
+Add copied token to authorization header of your request. See samples below.
 ```
 
 ## URIs
