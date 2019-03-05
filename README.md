@@ -20,3 +20,5 @@ go get github.com/gorilla/mux
 [Kapitel 7: Testing](kapitel07/README.md)
 
 [Kapitel 8: Hypermedia als Motor](kapitel08/README.md)
+
+[Kapitel 9: Sicherheit](kapitel09/README.md)
