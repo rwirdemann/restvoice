@@ -4,12 +4,13 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"github.com/rwirdemann/restvoice/kapitel09/identityprovider/secret"
 	"io"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/rwirdemann/restvoice/kapitel09/identityprovider/secret"
 
 	"github.com/dgrijalva/jwt-go"
 )

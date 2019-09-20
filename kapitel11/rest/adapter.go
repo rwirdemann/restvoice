@@ -32,7 +32,7 @@ func (a Adapter) HandleFunc(path string, f func(http.ResponseWriter,
 func (a Adapter) MakeGetActivitiesHandler(usecase usecase.GetActivities) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "public, max-age=0")
-		activities := usecase.Run(extractUserIdFromHeader(r.Header))
+		activities := usecase.Run(extractUserIDFromHeader(r.Header))
 		cacheableActivities := ActivitiesPresenter{}.Present(activities)
 
 		// Test if client wants a full refresh
@@ -62,7 +62,7 @@ func (a Adapter) MakeGetActivitiesHandler(usecase usecase.GetActivities) http.Ha
 	}
 }
 
-func extractUserIdFromHeader(h http.Header) string {
+func extractUserIDFromHeader(h http.Header) string {
 	return "1234"
 }
 

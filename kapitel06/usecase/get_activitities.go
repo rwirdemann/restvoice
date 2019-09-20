@@ -5,7 +5,7 @@ import (
 )
 
 type GetActivitiesPort interface {
-	GetActivities(userId string) []domain.Activity
+	GetActivities(userID string) []domain.Activity
 }
 
 type GetActivities struct {
@@ -16,6 +16,6 @@ func NewGetActivities(repository GetActivitiesPort) GetActivities {
 	return GetActivities{repository: repository}
 }
 
-func (u GetActivities) Run(userId string) []domain.Activity {
-	return u.repository.GetActivities(userId)
+func (u GetActivities) Run(userID string) []domain.Activity {
+	return u.repository.GetActivities(userID)
 }

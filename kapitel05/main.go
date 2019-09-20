@@ -19,8 +19,8 @@ var repository = database.NewRepository()
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
-	customerId := repository.AddCustomer("3skills")
-	repository.AddProject("Instantfoo.com", customerId)
+	customerID := repository.AddCustomer("3skills")
+	repository.AddProject("Instantfoo.com", customerID)
 	repository.AddActivity("Programmierung")
 }
 
@@ -47,8 +47,8 @@ func readCustomersHandler(writer http.ResponseWriter, _ *http.Request) {
 }
 
 func readProjectsHandler(writer http.ResponseWriter, request *http.Request) {
-	customerId, _ := strconv.Atoi(mux.Vars(request)["customerId"])
-	projects := repository.GetProjects(customerId)
+	customerID, _ := strconv.Atoi(mux.Vars(request)["customerId"])
+	projects := repository.GetProjects(customerID)
 	b, _ := json.Marshal(projects)
 	writer.Header().Set("Content-Type", "application/json")
 	_, _ = writer.Write(b)
@@ -73,7 +73,7 @@ func createInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 	var i domain.Invoice
 	_ = json.Unmarshal(body, &i)
 
-	i.CustomerId, _ = strconv.Atoi(mux.Vars(request)["customerId"])
+	i.CustomerID, _ = strconv.Atoi(mux.Vars(request)["customerId"])
 	created, _ := repository.CreateInvoice(i)
 	b, err := json.Marshal(created)
 	if err != nil {
@@ -82,7 +82,7 @@ func createInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	// Write response
-	location := fmt.Sprintf("%s/%d", request.URL.String(), created.Id)
+	location := fmt.Sprintf("%s/%d", request.URL.String(), created.ID)
 	writer.Header().Set("Location", location)
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusCreated)
@@ -104,7 +104,7 @@ func createBookingHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	created, _ := repository.CreateBooking(booking)
-	created.InvoiceId, _ = strconv.Atoi(mux.Vars(request)["invoiceId"])
+	created.InvoiceID, _ = strconv.Atoi(mux.Vars(request)["invoiceId"])
 	b, err := json.Marshal(created)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -112,7 +112,7 @@ func createBookingHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	// Write response
-	location := fmt.Sprintf("%s/%d", request.URL.String(), created.Id)
+	location := fmt.Sprintf("%s/%d", request.URL.String(), created.ID)
 	writer.Header().Set("Location", location)
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusCreated)
@@ -120,8 +120,8 @@ func createBookingHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func deleteBookingHandler(writer http.ResponseWriter, request *http.Request) {
-	bookingId, _ := strconv.Atoi(mux.Vars(request)["bookingId"])
-	repository.DeleteBooking(bookingId)
+	bookingID, _ := strconv.Atoi(mux.Vars(request)["bookingId"])
+	repository.DeleteBooking(bookingID)
 	writer.WriteHeader(http.StatusNoContent)
 }
 
@@ -139,17 +139,17 @@ func updateInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusBadRequest)
 	}
 
-	i.Id, _ = strconv.Atoi(mux.Vars(request)["invoiceId"])
-	i.CustomerId, _ = strconv.Atoi(mux.Vars(request)["customerId"])
+	i.ID, _ = strconv.Atoi(mux.Vars(request)["invoiceId"])
+	i.CustomerID, _ = strconv.Atoi(mux.Vars(request)["customerId"])
 
 	// Aggregate positions
 	if i.Status == "ready for aggregation" {
-		bookings := repository.GetBookingsByInvoiceId(i.Id)
+		bookings := repository.GetBookingsByInvoiceID(i.ID)
 		for _, b := range bookings {
-			activity := repository.ActivityById(b.ActivityId)
-			rate := repository.RateByProjectIdAndActivityId(b.ProjectId, b.ActivityId)
+			activity := repository.ActivityByID(b.ActivityID)
+			rate := repository.RateByProjectIDAndActivityID(b.ProjectID, b.ActivityID)
 
-			i.AddPosition(b.ProjectId, activity.Name, b.Hours, rate.Price)
+			i.AddPosition(b.ProjectID, activity.Name, b.Hours, rate.Price)
 		}
 		i.Status = "payment expected"
 	}
@@ -162,7 +162,7 @@ func updateInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 
 func readInvoiceHandler(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["invoiceId"])
-	i, _ := repository.FindById(id)
+	i, _ := repository.FindByID(id)
 	accept := request.Header.Get("Accept")
 	switch accept {
 	case "application/pdf":

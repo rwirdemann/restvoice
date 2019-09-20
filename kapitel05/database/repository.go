@@ -19,7 +19,7 @@ func NewRepository() *Repository {
 		bookings:   make(map[int]domain.Booking),
 		activities: make(map[int]domain.Activity),
 		rates:      make(map[int]map[int]domain.Rate)}
-	_, _ = r.CreateInvoice(domain.Invoice{Month: 6, Year: 2018, CustomerId: 1})
+	_, _ = r.CreateInvoice(domain.Invoice{Month: 6, Year: 2018, CustomerID: 1})
 	return r
 }
 
@@ -31,10 +31,10 @@ func (r *Repository) GetCustomers() []domain.Customer {
 	return customers
 }
 
-func (r *Repository) GetProjects(customerId int) []domain.Project {
+func (r *Repository) GetProjects(customerID int) []domain.Project {
 	var projects []domain.Project
 	for _, p := range r.projects {
-		if p.CustomerId == customerId {
+		if p.CustomerID == customerID {
 			projects = append(projects, p)
 		}
 	}
@@ -50,34 +50,34 @@ func (r *Repository) GetActivities() []domain.Activity {
 }
 
 func (r *Repository) AddActivity(name string) int {
-	a := domain.Activity{Id: r.nextActivityId(), Name: name}
-	r.activities[a.Id] = a
-	return a.Id
+	a := domain.Activity{ID: r.nextActivityID(), Name: name}
+	r.activities[a.ID] = a
+	return a.ID
 }
 
 func (r *Repository) AddCustomer(name string) int {
-	c := domain.Customer{Id: r.nextCustomerId(), Name: name}
-	r.customers[c.Id] = c
-	return c.Id
+	c := domain.Customer{ID: r.nextCustomerID(), Name: name}
+	r.customers[c.ID] = c
+	return c.ID
 }
 
-func (r *Repository) AddProject(name string, customerId int) int {
-	p := domain.Project{Id: r.nextProjectId(), Name: name, CustomerId: customerId}
-	r.projects[p.Id] = p
-	return p.Id
+func (r *Repository) AddProject(name string, customerID int) int {
+	p := domain.Project{ID: r.nextProjectID(), Name: name, CustomerID: customerID}
+	r.projects[p.ID] = p
+	return p.ID
 }
 
 func (r *Repository) CreateInvoice(invoice domain.Invoice) (domain.Invoice, error) {
-	invoice.Id = r.nextInvoiceId()
+	invoice.ID = r.nextInvoiceID()
 	invoice.Status = "open"
 	invoice.Bookings = []domain.Booking{}
-	r.invoices[invoice.Id] = invoice
+	r.invoices[invoice.ID] = invoice
 	return invoice, nil
 }
 
 func (r *Repository) CreateBooking(booking domain.Booking) (domain.Booking, error) {
-	booking.Id = r.nextBookingId()
-	r.bookings[booking.Id] = booking
+	booking.ID = r.nextBookingID()
+	r.bookings[booking.ID] = booking
 	return booking, nil
 }
 
@@ -85,10 +85,10 @@ func (r *Repository) DeleteBooking(id int) {
 	delete(r.bookings, id)
 }
 
-func (r *Repository) GetBookingsByInvoiceId(invoiceId int) []domain.Booking {
+func (r *Repository) GetBookingsByInvoiceID(invoiceID int) []domain.Booking {
 	var bookings []domain.Booking
 	for _, b := range r.bookings {
-		if b.InvoiceId == invoiceId {
+		if b.InvoiceID == invoiceID {
 			bookings = append(bookings, b)
 		}
 	}
@@ -96,65 +96,65 @@ func (r *Repository) GetBookingsByInvoiceId(invoiceId int) []domain.Booking {
 }
 
 func (r *Repository) Update(invoice domain.Invoice) {
-	r.invoices[invoice.Id] = invoice
+	r.invoices[invoice.ID] = invoice
 }
 
-func (r *Repository) FindById(id int) (domain.Invoice, bool) {
+func (r *Repository) FindByID(id int) (domain.Invoice, bool) {
 	i, ok := r.invoices[id]
 	return i, ok
 }
 
-func (r *Repository) nextInvoiceId() int {
-	nextId := 1
+func (r *Repository) nextInvoiceID() int {
+	nextID := 1
 	for _, v := range r.invoices {
-		if v.Id >= nextId {
-			nextId = v.Id + 1
+		if v.ID >= nextID {
+			nextID = v.ID + 1
 		}
 	}
-	return nextId
+	return nextID
 }
 
-func (r *Repository) nextCustomerId() int {
-	nextId := 1
+func (r *Repository) nextCustomerID() int {
+	nextID := 1
 	for _, v := range r.customers {
-		if v.Id >= nextId {
-			nextId = v.Id + 1
+		if v.ID >= nextID {
+			nextID = v.ID + 1
 		}
 	}
-	return nextId
+	return nextID
 }
 
-func (r *Repository) nextProjectId() int {
-	nextId := 1
+func (r *Repository) nextProjectID() int {
+	nextID := 1
 	for _, v := range r.projects {
-		if v.Id >= nextId {
-			nextId = v.Id + 1
+		if v.ID >= nextID {
+			nextID = v.ID + 1
 		}
 	}
-	return nextId
+	return nextID
 }
 
-func (r *Repository) nextBookingId() int {
-	nextId := 1
+func (r *Repository) nextBookingID() int {
+	nextID := 1
 	for _, v := range r.bookings {
-		if v.Id >= nextId {
-			nextId = v.Id + 1
+		if v.ID >= nextID {
+			nextID = v.ID + 1
 		}
 	}
-	return nextId
+	return nextID
 }
 
-func (r *Repository) nextActivityId() int {
-	nextId := 1
+func (r *Repository) nextActivityID() int {
+	nextID := 1
 	for _, v := range r.activities {
-		if v.Id >= nextId {
-			nextId = v.Id + 1
+		if v.ID >= nextID {
+			nextID = v.ID + 1
 		}
 	}
-	return nextId
+	return nextID
 }
 
-func (r *Repository) ActivityById(id int) domain.Activity {
+func (r *Repository) ActivityByID(id int) domain.Activity {
 	return r.activities[id]
 }
 
@@ -162,6 +162,6 @@ func (r *Repository) GetInvoice(id int, join ...string) domain.Invoice {
 	return r.invoices[id]
 }
 
-func (r *Repository) RateByProjectIdAndActivityId(projectId int, activityId int) domain.Rate {
+func (r *Repository) RateByProjectIDAndActivityID(projectID int, activityID int) domain.Rate {
 	return domain.Rate{}
 }

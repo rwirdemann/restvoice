@@ -11,11 +11,11 @@ type Position struct {
 }
 
 type Invoice struct {
-	Id         int                         `json:"id"`
+	ID         int                         `json:"id"`
 	Month      int                         `json:"month"`
 	Year       int                         `json:"year"`
 	Status     string                      `json:"status"`
-	CustomerId int                         `json:"customerId"`
+	CustomerID int                         `json:"customerId"`
 	Positions  map[int]map[string]Position `json:"positions,omitempty"`
 	Bookings   []Booking                   `json:"-"`
 	Updated    time.Time                   `json:"updated,omitempty"`
@@ -24,23 +24,24 @@ type Invoice struct {
 func (invoice *Invoice) AddBooking() {
 
 }
-func (invoice *Invoice) AddPosition(projectId int, activity string, hours float32,
+
+func (invoice *Invoice) AddPosition(projectID int, activity string, hours float32,
 	rate float32) {
 	if invoice.Positions == nil {
 		invoice.Positions = make(map[int]map[string]Position)
 	}
 
-	if invoice.Positions[projectId] == nil {
-		invoice.Positions[projectId] = make(map[string]Position)
+	if invoice.Positions[projectID] == nil {
+		invoice.Positions[projectID] = make(map[string]Position)
 	}
 
-	if p, ok := invoice.Positions[projectId][activity]; ok {
+	if p, ok := invoice.Positions[projectID][activity]; ok {
 		p.Hours = p.Hours + hours
 		p.Price = p.Price + hours*rate
-		invoice.Positions[projectId][activity] = p
+		invoice.Positions[projectID][activity] = p
 	} else {
 		position := Position{Hours: hours, Price: hours * rate}
-		invoice.Positions[projectId][activity] = position
+		invoice.Positions[projectID][activity] = position
 	}
 }
 

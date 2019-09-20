@@ -70,7 +70,7 @@ func addContactHandler(writer http.ResponseWriter, request *http.Request) {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		id := nextId()
+		id := nextID()
 		var contact Contact
 		_ = json.Unmarshal(b, &contact)
 		contactMap[id] = contact
@@ -115,7 +115,7 @@ func deleteContactHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.WriteHeader(http.StatusNoContent)
 }
 
-func nextId() int {
+func nextID() int {
 	id := 1
 	for k := range contactMap {
 		if k >= id {

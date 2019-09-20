@@ -44,10 +44,11 @@ func (a Adapter) readInvoice(r *http.Request) (domain.Invoice, error) {
 		return domain.Invoice{}, err
 	}
 
-	if invoiceId, ok := mux.Vars(r)["invoiceId"]; ok {
-		invoice.Id, _ = strconv.Atoi(invoiceId)
+	if invoiceID, ok := mux.Vars(r)["invoiceId"]; ok {
+		invoice.ID, _ = strconv.Atoi(invoiceID)
 	}
-	invoice.CustomerId, _ = strconv.Atoi(mux.Vars(r)["customerId"])
+
+	invoice.CustomerID, _ = strconv.Atoi(mux.Vars(r)["customerId"])
 	return invoice, nil
 }
 
@@ -164,7 +165,7 @@ func (a Adapter) readBooking(r *http.Request) (domain.Booking, error) {
 		return domain.Booking{}, err
 	}
 
-	booking.InvoiceId, _ = strconv.Atoi(mux.Vars(r)["invoiceId"])
+	booking.InvoiceID, _ = strconv.Atoi(mux.Vars(r)["invoiceId"])
 	return booking, nil
 }
 
