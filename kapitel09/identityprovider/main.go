@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/rwirdemann/restvoice/kapitel09/identityprovider/secret"
 )

@@ -2,7 +2,6 @@ package rest
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -27,7 +26,7 @@ type HALInvoice struct {
 
 func NewHALInvoice(invoice domain.Invoice) HALInvoice {
 	var links = make(map[domain.Operation]Link)
-	links["self"] = Link{fmt.Sprintf("/invoice/%d", invoice.Id)}
+	links["self"] = Link{fmt.Sprintf("/invoice/%d", invoice.ID)}
 	for _, o := range invoice.GetOperations() {
 		if l, err := translate(o, invoice); err == nil {
 			links[o] = l
@@ -41,17 +40,17 @@ func NewHALInvoice(invoice domain.Invoice) HALInvoice {
 func translate(operation domain.Operation, invoice domain.Invoice) (Link, error) {
 	switch operation {
 	case "book":
-		return Link{fmt.Sprintf("/book/%d", invoice.Id)}, nil
+		return Link{fmt.Sprintf("/book/%d", invoice.ID)}, nil
 	case "charge":
-		return Link{fmt.Sprintf("/charge/%d", invoice.Id)}, nil
+		return Link{fmt.Sprintf("/charge/%d", invoice.ID)}, nil
 	case "cancel":
-		return Link{fmt.Sprintf("/invoice/%d", invoice.Id)}, nil
+		return Link{fmt.Sprintf("/invoice/%d", invoice.ID)}, nil
 	case "payment":
-		return Link{fmt.Sprintf("/payment/%d", invoice.Id)}, nil
+		return Link{fmt.Sprintf("/payment/%d", invoice.ID)}, nil
 	case "archive":
-		return Link{fmt.Sprintf("/payment/%d", invoice.Id)}, nil
+		return Link{fmt.Sprintf("/payment/%d", invoice.ID)}, nil
 	default:
-		return Link{}, errors.New(fmt.Sprintf("No translation found for operation %s", operation))
+		return Link{}, fmt.Errorf(fmt.Sprintf("No translation found for operation %s", operation))
 	}
 }
 

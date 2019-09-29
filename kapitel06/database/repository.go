@@ -4,12 +4,11 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/rwirdemann/restvoice/kapitel05/domain"
 )
 
 type FakeRepository struct {
-	nextId     int
+	nextID     int
 	invoices   map[int]domain.Invoice
 	bookings   map[int]map[int]domain.Booking
 	projects   map[int]domain.Project
@@ -18,9 +17,9 @@ type FakeRepository struct {
 	rates      map[int]map[int]domain.Rate
 }
 
-func (r *FakeRepository) GetActivities(userId string) []domain.Activity {
+func (r *FakeRepository) GetActivities(userID string) []domain.Activity {
 	var activities []domain.Activity
-	for _, a := range r.activities[userId] {
+	for _, a := range r.activities[userID] {
 		activities = append(activities, a)
 	}
 	return activities
@@ -37,7 +36,7 @@ func NewFakeRepository() *FakeRepository {
 	return &r
 }
 
-func (r *FakeRepository) GetBookingsByInvoiceId(id int) []domain.Booking {
+func (r *FakeRepository) GetBookingsByInvoiceID(id int) []domain.Booking {
 	var bookings []domain.Booking
 	for _, b := range r.bookings[id] {
 		bookings = append(bookings, b)
@@ -49,7 +48,7 @@ func (r *FakeRepository) GetInvoice(id int, join ...string) domain.Invoice {
 	i := r.invoices[id]
 	if len(join) > 0 {
 		if strings.Contains(join[0], "bookings") {
-			i.Bookings = r.GetBookingsByInvoiceId(id)
+			i.Bookings = r.GetBookingsByInvoiceID(id)
 		}
 	}
 	return i
@@ -64,78 +63,78 @@ func (r *FakeRepository) GetCustomer(id int) domain.Customer {
 }
 
 func (r *FakeRepository) CreateInvoice(invoice domain.Invoice) (domain.Invoice, error) {
-	if invoice.Id == 0 {
-		invoice.Id = r.getNextId()
+	if invoice.ID == 0 {
+		invoice.ID = r.getNextID()
 	}
 	if invoice.Status == "" {
 		invoice.Status = "open"
 	}
-	r.invoices[invoice.Id] = invoice
+	r.invoices[invoice.ID] = invoice
 	return invoice, nil
 }
 
 func (r *FakeRepository) UpdateInvoice(invoice domain.Invoice) error {
-	r.invoices[invoice.Id] = invoice
+	r.invoices[invoice.ID] = invoice
 	return nil
 }
 
 func (r *FakeRepository) CreateBooking(booking domain.Booking) (domain.Booking, error) {
-	booking.Id = r.getNextId()
-	if bookings, ok := r.bookings[booking.InvoiceId]; ok {
-		bookings[booking.Id] = booking
+	booking.ID = r.getNextID()
+	if bookings, ok := r.bookings[booking.InvoiceID]; ok {
+		bookings[booking.ID] = booking
 	} else {
 		bookings := make(map[int]domain.Booking)
-		bookings[booking.Id] = booking
-		r.bookings[booking.InvoiceId] = bookings
+		bookings[booking.ID] = booking
+		r.bookings[booking.InvoiceID] = bookings
 	}
 	return booking, nil
 }
 
 func (r *FakeRepository) CreateActivity(activity domain.Activity) {
-	activity.Id = r.getNextId()
+	activity.ID = r.getNextID()
 	activity.Updated = time.Now().UTC()
-	if activities, ok := r.activities[activity.UserId]; ok {
-		activities[activity.Id] = activity
+	if activities, ok := r.activities[activity.UserID]; ok {
+		activities[activity.ID] = activity
 	} else {
 		activities := make(map[int]domain.Activity)
-		activities[activity.Id] = activity
-		r.activities[activity.UserId] = activities
+		activities[activity.ID] = activity
+		r.activities[activity.UserID] = activities
 	}
 }
 
-func (r *FakeRepository) ActivityById(id int) domain.Activity {
+func (r *FakeRepository) ActivityByID(id int) domain.Activity {
 	return r.activities[""][id]
 }
 
-func (r *FakeRepository) RateByProjectIdAndActivityId(projectId int, activityId int) domain.Rate {
-	return r.rates[projectId][activityId]
+func (r *FakeRepository) RateByProjectIDAndActivityID(projectID int, activityID int) domain.Rate {
+	return r.rates[projectID][activityID]
 }
 
-func (r *FakeRepository) getNextId() int {
-	r.nextId = r.nextId + 1
-	return r.nextId
+func (r *FakeRepository) getNextID() int {
+	r.nextID = r.nextID + 1
+	return r.nextID
 }
 
 func (r *FakeRepository) CreateRate(rate domain.Rate) {
-	if projectRates, ok := r.rates[rate.ProjectId]; ok {
-		projectRates[rate.ActivityId] = rate
+	if projectRates, ok := r.rates[rate.ProjectID]; ok {
+		projectRates[rate.ActivityID] = rate
 	} else {
-		r.rates[rate.ProjectId] = make(map[int]domain.Rate)
-		r.rates[rate.ProjectId][rate.ActivityId] = rate
+		r.rates[rate.ProjectID] = make(map[int]domain.Rate)
+		r.rates[rate.ProjectID][rate.ActivityID] = rate
 	}
 }
 
 func (r *FakeRepository) CreateProject(p domain.Project) {
-	p.Id = r.nextProjectId()
-	r.projects[p.Id] = p
+	p.ID = r.nextProjectID()
+	r.projects[p.ID] = p
 }
 
-func (r *FakeRepository) nextProjectId() int {
-	nextId := 1
+func (r *FakeRepository) nextProjectID() int {
+	nextID := 1
 	for _, i := range r.projects {
-		if i.Id >= nextId {
-			nextId = i.Id + 1
+		if i.ID >= nextID {
+			nextID = i.ID + 1
 		}
 	}
-	return nextId
+	return nextID
 }

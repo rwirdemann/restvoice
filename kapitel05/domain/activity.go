@@ -6,12 +6,12 @@ import (
 )
 
 type Activity struct {
-	Id      int       `json:"id"`
+	ID      int       `json:"id"`
 	Name    string    `json:"name"`
-	UserId  string    `json:"userId"` // belongs to user
+	UserID  string    `json:"userId"` // belongs to user
 	Updated time.Time `json:"-"`
 }
 
 func (a Activity) String() string {
-	return fmt.Sprintf("Id: %d Name: %s", a.Id, a.Name)
+	return fmt.Sprintf("Id: %d Name: %s", a.ID, a.Name)
 }

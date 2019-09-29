@@ -2,10 +2,11 @@ package roles
 
 import (
 	"fmt"
-	"github.com/rwirdemann/restvoice/kapitel09/identityprovider/secret"
 	"net/http"
 	"regexp"
 	"strconv"
+
+	"github.com/rwirdemann/restvoice/kapitel09/identityprovider/secret"
 
 	"github.com/gorilla/mux"
 
@@ -52,15 +53,16 @@ func isAdmin(token string) bool {
 func AssertOwnsInvoice(next http.HandlerFunc, repository RoleRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := extractJwtFromHeader(r.Header)
-		userId, _ := strconv.Atoi(claim(token, "id"))
-		invoiceId, _ := strconv.Atoi(mux.Vars(r)["invoiceId"])
-		invoice := repository.GetInvoice(invoiceId)
-		customer := repository.GetCustomer(invoice.CustomerId)
-		if customer.UserId == userId {
+		userID, _ := strconv.Atoi(claim(token, "id"))
+		invoiceID, _ := strconv.Atoi(mux.Vars(r)["invoiceId"])
+		invoice := repository.GetInvoice(invoiceID)
+		customer := repository.GetCustomer(invoice.CustomerID)
+		if customer.UserID == userID {
 			next.ServeHTTP(w, r)
 			return
 		}
 		w.WriteHeader(http.StatusForbidden)
+
 	}
 }
 

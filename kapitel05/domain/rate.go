@@ -1,7 +1,7 @@
 package domain
 
 type Rate struct {
-	ProjectId  int     `json:"projectId"`
-	ActivityId int     `json:"activityId"`
+	ProjectID  int     `json:"projectId"`
+	ActivityID int     `json:"activityId"`
 	Price      float32 `json:"price"`
 }
